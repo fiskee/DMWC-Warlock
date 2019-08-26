@@ -3,7 +3,7 @@
 ## Author: Fisker
 ## Notes: Warlock Rotation for DoMeWhen Classic
 ## DefaultState: Disabled
-## Dependencies: DoMeWhen
+## Dependencies: DoMeWhen-Classic
 
 Settings.lua
 Rotation.lua
