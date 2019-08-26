@@ -1,0 +1,9 @@
+## Interface: 11320
+## Title: DoMeWhen Classic - Warlock
+## Author: Fisker
+## Notes: Warlock Rotation for DoMeWhen Classic
+## DefaultState: Disabled
+## Dependencies: DoMeWhen
+
+Settings.lua
+Rotation.lua
