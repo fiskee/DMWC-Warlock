@@ -27,13 +27,13 @@ function Warlock.Rotation()
         if not DMW.Player.Equipment[18] and not IsCurrentSpell(Spell.Attack.SpellID) then
             StartAttack()
         end
-        if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.2) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and Debuff.Corruption:Refresh(Target) and (Target.TTD - Debuff.Corruption:Remain()) > 2 and Spell.Corruption:Cast(Target) then
+        if not Player.Moving and (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.4) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and not Debuff.Corruption:Exist(Target) and Target.TTD > 4 and Spell.Corruption:Cast(Target) then
             return true
         end
-        if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.2) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and Debuff.Immolate:Refresh(Target) and (Target.TTD - Debuff.Immolate:Remain()) > 2 and Spell.Immolate:Cast(Target) then
+        if not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.4) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 4 and Spell.Immolate:Cast(Target) then
             return true
         end
-        if Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellID) and Spell.Shoot:Cast(Target) then
+        if not Player.Moving and Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellID) and Spell.Shoot:Cast(Target) then
             return true
         end
     end
