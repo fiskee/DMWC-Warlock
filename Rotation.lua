@@ -24,6 +24,9 @@ function Warlock.Rotation()
         if Pet and not Pet.Dead and not UnitIsUnit(Target.Pointer, "pettarget") then
             PetAttack()
         end
+        if not DMW.Player.Equipment[18] and not IsCurrentSpell(Spell.Attack.SpellID) then
+            StartAttack()
+        end
         if Debuff.Corruption:Refresh(Target) and (Target.TTD - Debuff.Corruption:Remain()) > 2 and Spell.Corruption:Cast(Target) then
             return true
         end
