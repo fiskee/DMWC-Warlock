@@ -27,10 +27,10 @@ function Warlock.Rotation()
         if not DMW.Player.Equipment[18] and not IsCurrentSpell(Spell.Attack.SpellID) then
             StartAttack()
         end
-        if Debuff.Corruption:Refresh(Target) and (Target.TTD - Debuff.Corruption:Remain()) > 2 and Spell.Corruption:Cast(Target) then
+        if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.2) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and Debuff.Corruption:Refresh(Target) and (Target.TTD - Debuff.Corruption:Remain()) > 2 and Spell.Corruption:Cast(Target) then
             return true
         end
-        if Debuff.Immolate:Refresh(Target) and (Target.TTD - Debuff.Immolate:Remain()) > 2 and Spell.Immolate:Cast(Target) then
+        if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.2) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and Debuff.Immolate:Refresh(Target) and (Target.TTD - Debuff.Immolate:Remain()) > 2 and Spell.Immolate:Cast(Target) then
             return true
         end
         if Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellID) and Spell.Shoot:Cast(Target) then
