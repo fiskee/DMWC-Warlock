@@ -2,10 +2,11 @@ local DMW = DMW
 local Warlock = DMW.Rotations.WARLOCK
 local Rotation = DMW.Helpers.Rotation
 local Setting = DMW.Helpers.Rotation.Setting
-local Player, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy40Y, Enemy40YC
+local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy40Y, Enemy40YC
 
 local function Locals()
     Player = DMW.Player
+    Pet = DMW.Player.Pet
     Buff = Player.Buffs
     Debuff = Player.Debuffs
     Spell = Player.Spells
@@ -20,14 +21,17 @@ end
 function Warlock.Rotation()
     Locals()
     if Target and Target.ValidEnemy then
+        if Pet and not Pet.Dead and not UnitIsUnit(Target.Pointer, "pettarget") then
+            PetAttack()
+        end
         if Debuff.Corruption:Refresh(Target) and (Target.TTD - Debuff.Corruption:Remain()) > 2 and Spell.Corruption:Cast(Target) then
             return true
         end
         if Debuff.Immolate:Refresh(Target) and (Target.TTD - Debuff.Immolate:Remain()) > 2 and Spell.Immolate:Cast(Target) then
             return true
         end
-        if Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellName) then
-            Spell.Shoot:Cast(Target)
+        if Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellID) and Spell.Shoot:Cast(Target) then
+            return true
         end
     end
 end
