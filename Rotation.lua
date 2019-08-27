@@ -35,16 +35,16 @@ function Warlock.Rotation()
         if not DMW.Player.Equipment[18] and not IsCurrentSpell(Spell.Attack.SpellID) then
             StartAttack()
         end
-        if Setting("Corruption") and not Player.Moving and (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.4) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and not Debuff.Corruption:Exist(Target) and Target.TTD > 4 and Spell.Corruption:Cast(Target) then
+        if Setting("Corruption") and not Player.Moving and (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and not Debuff.Corruption:Exist(Target) and Target.TTD > 4 and Spell.Corruption:Cast(Target) then
             return true
         end
-        if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.4) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 4 and Spell.Immolate:Cast(Target) then
+        if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 4 and Spell.Immolate:Cast(Target) then
             return true
         end
         if not Player.Moving and Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellID) and Spell.Shoot:Cast(Target) then
             return true
         end
-        if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and not DMW.Player.Equipment[18] and Spell.ShadowBolt:Cast(Target) then
+        if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and not DMW.Player.Equipment[18] and Target.TTD > Spell.ShadowBolt:CastTime() and Spell.ShadowBolt:Cast(Target) then
             return true
         end
     end
