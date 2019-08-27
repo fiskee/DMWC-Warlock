@@ -14,7 +14,7 @@ function Warlock.Settings()
     --     }
     -- }
     UI.AddHeader("General")
-    UI.AddDropdown("Pet", nil, {"Disabled", "Imp", "Voidwalker", "Succubus"}, 1)
+    UI.AddDropdown("Pet", nil, {"Disabled", "Imp", "Voidwalker", "Succubus", "Felhunter"}, 1)
     UI.AddHeader("DPS")
     UI.AddToggle("Auto Pet Attack", "Auto cast pet attack on target", true)
     UI.AddToggle("Shadow Bolt", nil, true)

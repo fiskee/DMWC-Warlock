@@ -23,8 +23,9 @@ function Warlock.Rotation()
     if not Player.Combat and (not Pet or Pet.Dead) and Setting("Pet") ~= 1 then
         if Setting("Pet") == 2 and Spell.SummonImp:Cast(Player) then
             return true
-        elseif Setting("Pet") == 3 then--TODO: Add spells for these
-        elseif Setting("Pet") == 4 then
+        elseif Setting("Pet") == 3 and Spell.Voidwalker:Cast(Player) then--TODO: Add spells for these
+        elseif Setting("Pet") == 4 and Spell.Succubus:Cast(Player) then
+        elseif Setting("Pet") == 5 and Spell.Felhunter:Cast(Player) then
         end
     end
     if Target and Target.ValidEnemy and Target.Distance < 40 then
