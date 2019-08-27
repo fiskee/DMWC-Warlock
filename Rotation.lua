@@ -20,7 +20,7 @@ end
 
 function Warlock.Rotation()
     Locals()
-    if not Player.Combat and (not Pet or Pet.Dead) and Setting("Pet") ~= 1 then
+    if not Player.Combat and not Player.Moving and (not Pet or Pet.Dead) and Setting("Pet") ~= 1 then
         if Setting("Pet") == 2 and Spell.SummonImp:Cast(Player) then
             return true
         elseif Setting("Pet") == 3 and Spell.Voidwalker:Cast(Player) then--TODO: Add spells for these
