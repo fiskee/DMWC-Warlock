@@ -19,4 +19,15 @@ end
 
 function Warlock.Rotation()
     Locals()
+    if Target and Target.ValidEnemy then
+        if Debuff.Corruption:Refresh(Target) and (Target.TTD - Debuff.Corruption:Remain()) > 2 and Spell.Corruption:Cast(Target) then
+            return true
+        end
+        if Debuff.Immolate:Refresh(Target) and (Target.TTD - Debuff.Immolate:Remain()) > 2 and Spell.Immolate:Cast(Target) then
+            return true
+        end
+        if Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellName) then
+            Spell.Shoot:Cast(Target)
+        end
+    end
 end
