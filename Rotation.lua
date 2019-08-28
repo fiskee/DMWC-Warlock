@@ -3,6 +3,7 @@ local Warlock = DMW.Rotations.WARLOCK
 local Rotation = DMW.Helpers.Rotation
 local Setting = DMW.Helpers.Rotation.Setting
 local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy40Y, Enemy40YC
+local ShootTime = GetTime()
 
 local function Locals()
     Player = DMW.Player
@@ -60,7 +61,8 @@ function Warlock.Rotation()
         if Setting("Curse of Agony") and not Debuff.CurseOfAgony:Exist(Target) and Target.TTD > 4 and Spell.CurseOfAgony:Cast(Target) then
             return true
         end
-        if not Player.Moving and Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellID) and Spell.Shoot:Cast(Target) then
+        if not Player.Moving and Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellID) and (DMW.Time - ShootTime) > 0.3 and Spell.Shoot:Cast(Target) then
+            ShootTime = DMW.Time
             return true
         end
         if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
