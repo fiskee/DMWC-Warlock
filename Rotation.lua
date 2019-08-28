@@ -37,7 +37,7 @@ function Warlock.Rotation()
                 local CreatureType
                 for i, Unit in ipairs(Enemy40Y) do
                     if i > 1 then
-                        CreatureType = UnitCreatureType(Unit)
+                        CreatureType = UnitCreatureType(Unit.Pointer)
                         if Unit.TTD > 3 and not (CreatureType == "Undead" or CreatureType == "Mechanical") and not Unit:IsBoss() and Spell.Fear:Cast(Unit) then
                             return true
                         end
