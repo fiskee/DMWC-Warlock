@@ -23,11 +23,11 @@ function Warlock.Rotation()
     if not Player.Combat and not Player.Moving and (not Pet or Pet.Dead) and Setting("Pet") ~= 1 then
         if Setting("Pet") == 2 and not Spell.SummonImp:LastCast() and Spell.SummonImp:Cast(Player) then
             return true
-        elseif Setting("Pet") == 3 and not Spell.Voidwalker:LastCast() and Spell.Voidwalker:Cast(Player) then
+        elseif Setting("Pet") == 3 and not Spell.SummonVoidwalker:LastCast() and Spell.SummonVoidwalker:Cast(Player) then
             return true
-        elseif Setting("Pet") == 4 and not Spell.Succubus:LastCast() and Spell.Succubus:Cast(Player) then
+        elseif Setting("Pet") == 4 and not Spell.SummonSuccubus:LastCast() and Spell.SummonSuccubus:Cast(Player) then
             return true
-        elseif Setting("Pet") == 5 and not Spell.Felhunter:LastCast() and Spell.Felhunter:Cast(Player) then
+        elseif Setting("Pet") == 5 and not Spell.SummonFelhunter:LastCast() and Spell.SummonFelhunter:Cast(Player) then
             return true
         end
     end
