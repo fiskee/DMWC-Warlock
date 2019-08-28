@@ -55,11 +55,7 @@ function Warlock.Rotation()
     if Target and Target.ValidEnemy and Target.Distance < 40 and Player:GCDRemain() == 0 then
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() then
-                    if IsCurrentSpell(Spell.Shoot.SpellID) and (DMW.Time - ShootTime) > 0.3 and Spell.Shoot:Cast(Target) then
-                        ShootTime = DMW.Time
-                    end
-                    Spell.DrainSoul:Cast(Unit)
+                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() and Spell.DrainSoul:Cast(Unit) then
                     return true
                 end
             end
@@ -82,6 +78,9 @@ function Warlock.Rotation()
         end
         if not DMW.Player.Equipment[18] and not IsCurrentSpell(Spell.Attack.SpellID) then
             StartAttack()
+        end
+        if Setting("Health Funnel") and Pet and not Pet.Dead and Pet.HP < Setting("Health Funnel HP") and Target.TTD > 2 and Player.HP > 60 and Spell.HealthFunnel:Cast(Pet) then
+            return true
         end
         if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 7 and Spell.Immolate:Cast(Target) then
             return true
