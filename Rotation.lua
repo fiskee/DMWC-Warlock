@@ -2,7 +2,7 @@ local DMW = DMW
 local Warlock = DMW.Rotations.WARLOCK
 local Rotation = DMW.Helpers.Rotation
 local Setting = DMW.Helpers.Rotation.Setting
-local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy40Y, Enemy40YC
+local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy40Y, Enemy40YC, Enemy30Y, Enemy30YC
 local ShootTime = GetTime()
 
 local function Locals()
@@ -17,6 +17,23 @@ local function Locals()
     HUD = DMW.Settings.profile.HUD
     CDs = Player:CDs()
     Enemy40Y, Enemy40YC = Player:GetEnemies(40)
+    Enemy30Y, Enemy30YC = Player:GetEnemies(40)
+end
+
+local function DeleteShards(Max)
+    local Count = 1
+    for Bag = 0, 4, 1 do
+        for Slot = 1, GetContainerNumSlots(Bag), 1 do
+            local ItemID = GetContainerItemID(Bag, Slot)
+            if ItemID and ItemID == 6265 then
+                if Count > Max then
+                    PickupContainerItem(Bag, Slot)
+                    DeleteCursorItem()
+                end
+                Count = Count + 1
+            end
+        end
+    end
 end
 
 function Warlock.Rotation()
@@ -32,7 +49,21 @@ function Warlock.Rotation()
             return true
         end
     end
-    if Target and Target.ValidEnemy and Target.Distance < 40 then
+    if Setting("Auto Delete Shards") then
+        DeleteShards(Setting("Max Shards"))
+    end
+    if Target and Target.ValidEnemy and Target.Distance < 40 and Player:GCDRemain() == 0 then
+        if not Player.Moving and Setting("Drain Soul Snipe") then
+            for _, Unit in ipairs(Enemy30Y) do
+                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() then
+                    if IsCurrentSpell(Spell.Shoot.SpellID) and (DMW.Time - ShootTime) > 0.3 and Spell.Shoot:Cast(Target) then
+                        ShootTime = DMW.Time
+                    end
+                    Spell.DrainSoul:Cast(Unit)
+                    return true
+                end
+            end
+        end
         if not Player.Moving and Setting("Fear Bonus Mobs") and Debuff.Fear:Count() == 0 and (not Spell.Fear:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7)) then
             if Enemy40YC > 1 and not Player.InGroup then
                 local CreatureType
@@ -52,16 +83,16 @@ function Warlock.Rotation()
         if not DMW.Player.Equipment[18] and not IsCurrentSpell(Spell.Attack.SpellID) then
             StartAttack()
         end
-        if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 5 and Spell.Immolate:Cast(Target) then
+        if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 7 and Spell.Immolate:Cast(Target) then
             return true
         end
-        if Setting("Corruption") and not Player.Moving and (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and not Debuff.Corruption:Exist(Target) and Target.TTD > 5 and Spell.Corruption:Cast(Target) then
+        if Setting("Corruption") and not Player.Moving and (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and not Debuff.Corruption:Exist(Target) and Target.TTD > 7 and Spell.Corruption:Cast(Target) then
             return true
         end
         if Setting("Curse of Agony") and not Debuff.CurseOfAgony:Exist(Target) and Target.TTD > 4 and Spell.CurseOfAgony:Cast(Target) then
             return true
         end
-        if not Player.Moving and Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellID) and (DMW.Time - ShootTime) > 0.3 and Spell.Shoot:Cast(Target) then
+        if not Player.Moving and ((Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target)) or Player.PowerPct < 10) and not IsCurrentSpell(Spell.Shoot.SpellID) and (DMW.Time - ShootTime) > 0.3 and Spell.Shoot:Cast(Target) then
             ShootTime = DMW.Time
             return true
         end

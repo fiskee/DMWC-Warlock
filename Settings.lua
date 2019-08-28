@@ -22,4 +22,8 @@ function Warlock.Settings()
     UI.AddToggle("Immolate", nil, true)
     UI.AddToggle("Curse of Agony", nil, true)
     UI.AddToggle("Fear Bonus Mobs", "Auto fear non target enemies when solo", false)
+    UI.AddToggle("Drain Soul Snipe", "Try to auto snipe enemies with drain soul, useful for shard farming or Improved Drain Soul talent", false)
+    UI.AddHeader("Utility")
+    UI.AddToggle("Auto Delete Shards", "Activate automatic deletion of shards from bags, set max below", true)
+    UI.AddRange("Max Shards", "Control max number of shards in bag", 0, 20, 1, 10)
 end
