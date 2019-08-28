@@ -21,5 +21,5 @@ function Warlock.Settings()
     UI.AddToggle("Corruption", nil, true)
     UI.AddToggle("Immolate", nil, true)
     UI.AddToggle("Curse of Agony", nil, true)
-    UI.AddToggle("Fear Bonus Mobs", nil, true)
+    UI.AddToggle("Fear Bonus Mobs", "Auto fear non target enemies when solo", false)
 end
