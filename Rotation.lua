@@ -36,7 +36,7 @@ function Warlock.Rotation()
             if Enemy40YC > 1 and not Player.InGroup then
                 for i, Unit in ipairs(Enemy40Y) do
                     if i > 1 then
-                        if not Debuff.Fear:Exist(Unit) and Spell.Fear:Cast(Unit) then
+                        if Unit.TTD > 3 and not Debuff.Fear:Exist(Unit) and (not Spell.Fear:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Unit.Pointer)) and Spell.Fear:Cast(Unit) then
                             return true
                         end
                     end
