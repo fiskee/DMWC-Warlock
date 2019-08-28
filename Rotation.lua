@@ -32,11 +32,13 @@ function Warlock.Rotation()
         end
     end
     if Target and Target.ValidEnemy and Target.Distance < 40 then
-        if not Player.Moving and Setting("Fear Bonus Mobs") then
+        if not Player.Moving and Setting("Fear Bonus Mobs") and Debuff.Fear:Count() == 0 and (not Spell.Fear:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7)) then
             if Enemy40YC > 1 and not Player.InGroup then
+                local CreatureType
                 for i, Unit in ipairs(Enemy40Y) do
                     if i > 1 then
-                        if Unit.TTD > 3 and not Debuff.Fear:Exist(Unit) and (not Spell.Fear:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Unit.Pointer)) and Spell.Fear:Cast(Unit) then
+                        CreatureType = UnitCreatureType(Unit)
+                        if Unit.TTD > 3 and not (CreatureType == "Undead" or CreatureType == "Mechanical") and not Unit:IsBoss() and Spell.Fear:Cast(Unit) then
                             return true
                         end
                     end
