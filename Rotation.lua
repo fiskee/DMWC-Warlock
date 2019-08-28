@@ -21,24 +21,33 @@ end
 function Warlock.Rotation()
     Locals()
     if not Player.Combat and not Player.Moving and (not Pet or Pet.Dead) and Setting("Pet") ~= 1 then
-        if Setting("Pet") == 2 and Spell.SummonImp:Cast(Player) then
+        if Setting("Pet") == 2 and not Spell.SummonImp:LastCast() and Spell.SummonImp:Cast(Player) then
             return true
-        elseif Setting("Pet") == 3 and Spell.Voidwalker:Cast(Player) then--TODO: Add spells for these
-        elseif Setting("Pet") == 4 and Spell.Succubus:Cast(Player) then
-        elseif Setting("Pet") == 5 and Spell.Felhunter:Cast(Player) then
+        elseif Setting("Pet") == 3 and not Spell.Voidwalker:LastCast() and Spell.Voidwalker:Cast(Player) then
+            return true
+        elseif Setting("Pet") == 4 and not Spell.Succubus:LastCast() and Spell.Succubus:Cast(Player) then
+            return true
+        elseif Setting("Pet") == 5 and not Spell.Felhunter:LastCast() and Spell.Felhunter:Cast(Player) then
+            return true
         end
     end
     if Target and Target.ValidEnemy and Target.Distance < 40 then
+        if Setting("Fear Bonus Mobs") then
+
+        end
         if Setting("Auto Pet Attack") and Pet and not Pet.Dead and not UnitIsUnit(Target.Pointer, "pettarget") then
             PetAttack()
         end
         if not DMW.Player.Equipment[18] and not IsCurrentSpell(Spell.Attack.SpellID) then
             StartAttack()
         end
+        if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 5 and Spell.Immolate:Cast(Target) then
+            return true
+        end
         if Setting("Corruption") and not Player.Moving and (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and not Debuff.Corruption:Exist(Target) and Target.TTD > 5 and Spell.Corruption:Cast(Target) then
             return true
         end
-        if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 5 and Spell.Immolate:Cast(Target) then
+        if Setting("Curse of Agony") and not Debuff.CurseOfAgony:Exist(Target) and Target.TTD > 4 and Spell.CurseOfAgony:Cast(Target) then
             return true
         end
         if not Player.Moving and Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target) and not IsCurrentSpell(Spell.Shoot.SpellID) and Spell.Shoot:Cast(Target) then

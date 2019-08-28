@@ -20,4 +20,6 @@ function Warlock.Settings()
     UI.AddToggle("Shadow Bolt", nil, true)
     UI.AddToggle("Corruption", nil, true)
     UI.AddToggle("Immolate", nil, true)
+    UI.AddToggle("Curse of Agony", nil, true)
+    UI.AddToggle("Fear Bonus Mobs", nil, true)
 end
