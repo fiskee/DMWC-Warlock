@@ -80,7 +80,7 @@ function Warlock.Rotation()
         end
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 12) and not Unit:IsBoss() and Spell.DrainSoul:CD() < 0.2 then
+                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 12) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.2 then
                     if IsAutoRepeatSpell(Spell.Shoot.SpellName) then
                         MoveForwardStart()
                         MoveForwardStop()
