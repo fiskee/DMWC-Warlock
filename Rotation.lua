@@ -3,6 +3,7 @@ local Warlock = DMW.Rotations.WARLOCK
 local Rotation = DMW.Helpers.Rotation
 local Setting = DMW.Helpers.Rotation.Setting
 local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy20Y, Enemy20YC, Enemy30Y, Enemy30YC
+local WandTime = GetTime()
 
 local function Locals()
     Player = DMW.Player
@@ -54,7 +55,7 @@ function Warlock.Rotation()
     if Target and Target.ValidEnemy and Target.Distance < 40 and Player:GCDRemain() == 0 then
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() and Spell.DrainSoul:Cast(Unit) then
+                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:Cast(Unit) then
                     return true
                 end
             end
@@ -90,7 +91,8 @@ function Warlock.Rotation()
         if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 7 and Spell.Immolate:Cast(Target) then
             return true
         end
-        if not Player.Moving and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and Spell.Shoot:Cast(Target) then
+        if not Player.Moving and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.4 and Spell.Shoot:Cast(Target) then
+            WandTime = DMW.Time
             return true
         end
         if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
