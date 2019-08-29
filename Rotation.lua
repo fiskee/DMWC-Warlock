@@ -36,6 +36,29 @@ local function DeleteShards(Max)
     end
 end
 
+local function Wand()
+    if not Player.Moving and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.4 and 
+    (Player.PowerPct < 10 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 4) and 
+    (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 7) and 
+    (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7))) and 
+    Spell.Shoot:Cast(Target) then
+        WandTime = DMW.Time
+        return true
+    end
+end
+
+local function Defensive()
+    if Setting("Healthstone") and Player.HP < Setting("Healthstone HP") and Item.MinorHealthstone:Use(Player) then
+        return true
+    end
+    if Setting("Drain Life") and Player.HP < Setting("Drain Life HP") and Spell.DrainLife:Cast(Target) then
+        return true
+    end
+    if Setting("Health Funnel") and Pet and not Pet.Dead and Pet.HP < Setting("Health Funnel HP") and Target.TTD > 2 and Player.HP > 60 and Spell.HealthFunnel:Cast(Pet) then
+        return true
+    end
+end
+
 function Warlock.Rotation()
     Locals()
     if not Player.Combat and not Player.Moving and (not Pet or Pet.Dead) and Setting("Pet") ~= 1 then
@@ -53,6 +76,9 @@ function Warlock.Rotation()
         DeleteShards(Setting("Max Shards"))
     end
     if Target and Target.ValidEnemy and Target.Distance < 40 and Player:GCDRemain() == 0 then
+        if Defensive() then
+            return true
+        end
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
                 if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:Cast(Unit) then
@@ -79,9 +105,6 @@ function Warlock.Rotation()
         if not DMW.Player.Equipment[18] and not IsCurrentSpell(Spell.Attack.SpellID) then
             StartAttack()
         end
-        if Setting("Health Funnel") and Pet and not Pet.Dead and Pet.HP < Setting("Health Funnel HP") and Target.TTD > 2 and Player.HP > 60 and Spell.HealthFunnel:Cast(Pet) then
-            return true
-        end
         if Setting("Corruption") and (not Player.Moving or Talent.ImprovedCorruption.Rank == 5) and (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and not Debuff.Corruption:Exist(Target) and Target.TTD > 7 and Spell.Corruption:Cast(Target) then
             return true
         end
@@ -91,12 +114,11 @@ function Warlock.Rotation()
         if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 7 and Spell.Immolate:Cast(Target) then
             return true
         end
-        if not Player.Moving and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.4 and Spell.Shoot:Cast(Target) then
-            WandTime = DMW.Time
-            return true
-        end
         if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
             return true
+        end
+        if DMW.Player.Equipment[18] then
+            Wand()
         end
     end
 end
