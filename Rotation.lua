@@ -75,17 +75,19 @@ function Warlock.Rotation()
     if Setting("Auto Delete Shards") then
         DeleteShards(Setting("Max Shards"))
     end
-    if Target and Target.ValidEnemy and Target.Distance < 40 and Player:GCDRemain() == 0 then
+    if Target and Target.ValidEnemy and Target.Distance < 40 then
         if Defensive() then
             return true
         end
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:Cast(Unit) then
+                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.4 then
                     if IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and Spell.Shoot:Cast(Target) then
                         WandTime = DMW.Time
                     end
-                    return true
+                    if Spell.DrainSoul:Cast(Unit) then
+                        return true
+                    end
                 end
             end
         end
@@ -120,7 +122,7 @@ function Warlock.Rotation()
         if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
             return true
         end
-        if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < 20 and Spell.ShadowBolt:Cast(Target) then
+        if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < 20 and Spell.LifeTap:Cast(Target) then
             return true
         end
         if DMW.Player.Equipment[18] then
