@@ -2,8 +2,7 @@ local DMW = DMW
 local Warlock = DMW.Rotations.WARLOCK
 local Rotation = DMW.Helpers.Rotation
 local Setting = DMW.Helpers.Rotation.Setting
-local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy40Y, Enemy40YC, Enemy30Y, Enemy30YC
-local ShootTime = GetTime()
+local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy20Y, Enemy20YC, Enemy30Y, Enemy30YC
 
 local function Locals()
     Player = DMW.Player
@@ -16,8 +15,8 @@ local function Locals()
     Target = Player.Target or false
     HUD = DMW.Settings.profile.HUD
     CDs = Player:CDs()
-    Enemy40Y, Enemy40YC = Player:GetEnemies(40)
-    Enemy30Y, Enemy30YC = Player:GetEnemies(40)
+    Enemy20Y, Enemy20YC = Player:GetEnemies(20)
+    Enemy30Y, Enemy30YC = Player:GetEnemies(30)
 end
 
 local function DeleteShards(Max)
@@ -61,9 +60,9 @@ function Warlock.Rotation()
             end
         end
         if not Player.Moving and Setting("Fear Bonus Mobs") and Debuff.Fear:Count() == 0 and (not Spell.Fear:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7)) then
-            if Enemy40YC > 1 and not Player.InGroup then
+            if Enemy20YC > 1 and not Player.InGroup then
                 local CreatureType
-                for i, Unit in ipairs(Enemy40Y) do
+                for i, Unit in ipairs(Enemy20Y) do
                     if i > 1 then
                         CreatureType = UnitCreatureType(Unit.Pointer)
                         if Unit.TTD > 3 and not (CreatureType == "Undead" or CreatureType == "Mechanical") and not Unit:IsBoss() and Spell.Fear:Cast(Unit) then
@@ -91,8 +90,7 @@ function Warlock.Rotation()
         if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 7 and Spell.Immolate:Cast(Target) then
             return true
         end
-        if not Player.Moving and ((Debuff.Immolate:Exist(Target) and Debuff.Corruption:Exist(Target)) or Player.PowerPct < 10) and not IsCurrentSpell(Spell.Shoot.SpellID) and (DMW.Time - ShootTime) > 0.3 and Spell.Shoot:Cast(Target) then
-            ShootTime = DMW.Time
+        if not Player.Moving and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and Spell.Shoot:Cast(Target) then
             return true
         end
         if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
