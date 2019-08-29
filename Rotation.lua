@@ -82,9 +82,9 @@ function Warlock.Rotation()
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
                 if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:Cast(Unit) then
-                    --if IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and Spell.Shoot:Cast(Target) then
+                    if IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and Spell.Shoot:Cast(Target) then
                         WandTime = DMW.Time
-                    --end
+                    end
                     return true
                 end
             end
