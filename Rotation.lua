@@ -37,7 +37,7 @@ local function DeleteShards(Max)
 end
 
 local function Wand()
-    if not Player.Moving and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.4 and 
+    if not Player.Moving and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and 
     (Player.PowerPct < 10 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 4) and 
     (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 7) and 
     (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7))) and 
@@ -82,6 +82,9 @@ function Warlock.Rotation()
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
                 if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:Cast(Unit) then
+                    --if IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and Spell.Shoot:Cast(Target) then
+                        WandTime = DMW.Time
+                    --end
                     return true
                 end
             end
@@ -115,6 +118,9 @@ function Warlock.Rotation()
             return true
         end
         if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
+            return true
+        end
+        if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < 20 and Spell.ShadowBolt:Cast(Target) then
             return true
         end
         if DMW.Player.Equipment[18] then
