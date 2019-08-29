@@ -40,8 +40,7 @@ local function Wand()
     if not Player.Moving and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and 
     (Player.PowerPct < 10 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 4) and 
     (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 7) and 
-    (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7))) and 
-    Spell.Shoot:Cast(Target) then
+    (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7))) and Spell.Shoot:Cast(Target) then
         WandTime = DMW.Time
         return true
     end
@@ -81,13 +80,8 @@ function Warlock.Rotation()
         end
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.4 then
-                    if IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and Spell.Shoot:Cast(Target) then
-                        WandTime = DMW.Time
-                    end
-                    if Spell.DrainSoul:Cast(Unit) then
-                        return true
-                    end
+                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 10) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:Cast(Unit) then
+                    return true
                 end
             end
         end
