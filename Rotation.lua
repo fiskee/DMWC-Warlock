@@ -97,7 +97,7 @@ function Warlock.Rotation()
                 local CreatureType
                 for i, Unit in ipairs(Enemy20Y) do
                     if i > 1 then
-                        CreatureType = UnitCreatureType(Unit.Pointer)
+                        CreatureType = Unit.CreatureType
                         if Unit.TTD > 3 and not (CreatureType == "Undead" or CreatureType == "Mechanical" or CreatureType == "Totem") and not Unit:IsBoss() and Spell.Fear:Cast(Unit) then
                             return true
                         end
@@ -111,19 +111,46 @@ function Warlock.Rotation()
         if (not DMW.Player.Equipment[18] or (Target.Distance <= 1 and Setting("Auto Attack In Melee"))) and not IsCurrentSpell(Spell.Attack.SpellID) then
             StartAttack()
         end
-        if Setting("Corruption") and (not Player.Moving or Talent.ImprovedCorruption.Rank == 5) and (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and not Debuff.Corruption:Exist(Target) and Target.TTD > 7 and Spell.Corruption:Cast(Target) then
-            return true
+        --Corruption
+        if Setting("Corruption") and (not Player.Moving or Talent.ImprovedCorruption.Rank == 5) then
+            if Setting("Cycle Corruption") then
+                for _, Unit in ipairs(Enemy30Y) do
+                    if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Unit.Pointer)) and not Debuff.Corruption:Exist(Unit) and Unit.TTD > 7 and Spell.Corruption:Cast(Unit) then
+                        return true
+                    end
+                end
+            elseif (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and not Debuff.Corruption:Exist(Target) and Target.TTD > 7 and Spell.Corruption:Cast(Target) then
+                return true
+            end
         end
-        if Setting("Curse of Agony") and not Debuff.CurseOfAgony:Exist(Target) and Target.TTD > 4 and Spell.CurseOfAgony:Cast(Target) then
-            return true
+        --CoA
+        if Setting("Curse of Agony") then
+            if Setting("Cycle Curse of Agony") then
+                for _, Unit in ipairs(Enemy30Y) do
+                    if not Debuff.CurseOfAgony:Exist(Unit) and Unit.TTD > 10 and Spell.CurseOfAgony:Cast(Unit) then
+                        return true
+                    end
+                end
+            elseif not Debuff.CurseOfAgony:Exist(Target) and Target.TTD > 10 and Spell.CurseOfAgony:Cast(Target) then
+                return true
+            end
         end
-        if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 7 and Spell.Immolate:Cast(Target) then
+        --Immolate
+        if Setting("Immolate") and not Player.Moving then
+            if Setting("Cycle Immolate") then
+                for _, Unit in ipairs(Enemy30Y) do
+                    if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Unit.Pointer)) and not Debuff.Immolate:Exist(Unit) and Unit.TTD > 10 and Spell.Immolate:Cast(Unit) then
+                        return true
+                    end
+                end
+            elseif (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 10 and Spell.Immolate:Cast(Target) then
+                return true
+            end
+        end
+        if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < 20 and Spell.LifeTap:Cast(Target) then
             return true
         end
         if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
-            return true
-        end
-        if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < 20 and Spell.LifeTap:Cast(Target) then
             return true
         end
         if DMW.Player.Equipment[18] then
