@@ -4,6 +4,7 @@ local Rotation = DMW.Helpers.Rotation
 local Setting = DMW.Helpers.Rotation.Setting
 local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy20Y, Enemy20YC, Enemy30Y, Enemy30YC
 local WandTime = GetTime()
+local PetAttackTime = GetTime()
 
 local function Locals()
     Player = DMW.Player
@@ -38,8 +39,8 @@ end
 
 local function Wand()
     if not Player.Moving and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and (Target.Distance > 1 or not Setting("Auto Attack In Melee")) and
-    (Player.PowerPct < 10 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 4) and 
-    (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 7) and 
+    (Player.PowerPct < 10 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10) and 
+    (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 10) and 
     (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7))) and Spell.Shoot:Cast(Target) then
         WandTime = DMW.Time
         return true
@@ -105,7 +106,8 @@ function Warlock.Rotation()
                 end
             end
         end
-        if Setting("Auto Pet Attack") and Pet and not Pet.Dead and not UnitIsUnit(Target.Pointer, "pettarget") then
+        if Setting("Auto Pet Attack") and Pet and not Pet.Dead and not UnitIsUnit(Target.Pointer, "pettarget") and DMW.Time > (PetAttackTime + 1) then
+            PetAttackTime = DMW.Time
             PetAttack()
         end
         if (not DMW.Player.Equipment[18] or (Target.Distance <= 1 and Setting("Auto Attack In Melee"))) and not IsCurrentSpell(Spell.Attack.SpellID) then
