@@ -50,7 +50,7 @@ local function Defensive()
     if Setting("Healthstone") and Player.HP < Setting("Healthstone HP") and Item.MinorHealthstone:Use(Player) then
         return true
     end
-    if Setting("Drain Life") and Player.HP < Setting("Drain Life HP") and Spell.DrainLife:Cast(Target) then
+    if Setting("Drain Life") and Player.HP < Setting("Drain Life HP") and Spell.DrainLife:Cast(Target) and not (Target.CreatureType == "Mechanical" or Target.CreatureType == "Elemental") then
         return true
     end
     if Setting("Health Funnel") and Pet and not Pet.Dead and Pet.HP < Setting("Health Funnel HP") and Target.TTD > 2 and Player.HP > 60 and Spell.HealthFunnel:Cast(Pet) then
