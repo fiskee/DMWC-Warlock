@@ -70,7 +70,7 @@ function Warlock.Rotation()
         elseif Setting("Pet") == 5 and not Spell.SummonFelhunter:LastCast() and Spell.SummonFelhunter:Cast(Player) then
             return true
         end
-    end
+    end   
     if Setting("Auto Delete Shards") then
         DeleteShards(Setting("Max Shards"))
     end
@@ -147,7 +147,7 @@ function Warlock.Rotation()
                 return true
             end
         end
-        if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < 20 and Spell.LifeTap:Cast(Target) then
+        if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < 20 and Spell.LifeTap:Cast(Player) then
             return true
         end
         if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
