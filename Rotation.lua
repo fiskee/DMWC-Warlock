@@ -115,11 +115,11 @@ function Warlock.Rotation()
         if Setting("Corruption") and (not Player.Moving or Talent.ImprovedCorruption.Rank == 5) then
             if Setting("Cycle Corruption") then
                 for _, Unit in ipairs(Enemy30Y) do
-                    if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Unit.Pointer)) and not Debuff.Corruption:Exist(Unit) and Unit.TTD > 7 and Spell.Corruption:Cast(Unit) then
+                    if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Unit.Pointer)) and Unit.Facing and not Debuff.Corruption:Exist(Unit) and Unit.TTD > 7 and Spell.Corruption:Cast(Unit) then
                         return true
                     end
                 end
-            elseif (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and not Debuff.Corruption:Exist(Target) and Target.TTD > 7 and Spell.Corruption:Cast(Target) then
+            elseif (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and Target.Facing and not Debuff.Corruption:Exist(Target) and Target.TTD > 7 and Spell.Corruption:Cast(Target) then
                 return true
             end
         end
@@ -139,21 +139,21 @@ function Warlock.Rotation()
         if Setting("Immolate") and not Player.Moving then
             if Setting("Cycle Immolate") then
                 for _, Unit in ipairs(Enemy30Y) do
-                    if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Unit.Pointer)) and not Debuff.Immolate:Exist(Unit) and Unit.TTD > 10 and Spell.Immolate:Cast(Unit) then
+                    if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Unit.Pointer)) and Unit.Facing and not Debuff.Immolate:Exist(Unit) and Unit.TTD > 10 and Spell.Immolate:Cast(Unit) then
                         return true
                     end
                 end
-            elseif (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and not Debuff.Immolate:Exist(Target) and Target.TTD > 10 and Spell.Immolate:Cast(Target) then
+            elseif (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and Target.Facing and not Debuff.Immolate:Exist(Target) and Target.TTD > 10 and Spell.Immolate:Cast(Target) then
                 return true
             end
         end
         if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < 20 and Spell.LifeTap:Cast(Player) then
             return true
         end
-        if Setting("Shadow Bolt") and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
+        if Setting("Shadow Bolt") and Target.Facing and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
             return true
         end
-        if DMW.Player.Equipment[18] then
+        if DMW.Player.Equipment[18] and Target.Facing then
             Wand()
         end
     end
