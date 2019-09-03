@@ -75,6 +75,11 @@ function Warlock.Rotation()
     if Setting("Auto Delete Shards") then
         DeleteShards(Setting("Max Shards"))
     end
+    if Setting("Auto Target Quest Units") then
+        if Player:AutoTargetQuest(30, true) then
+            return true
+        end
+    end
     if Target and Target.ValidEnemy and Target.Distance < 40 then
         if Defensive() then
             return true
