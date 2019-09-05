@@ -101,14 +101,7 @@ function Warlock.Rotation()
         end
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.2 then
-                    if IsAutoRepeatSpell(Spell.Shoot.SpellName) then
-                        MoveForwardStart()
-                        MoveForwardStop()
-                        WandTime = DMW.Time
-                        return true
-                    end
-                    Spell.DrainSoul:Cast(Unit)
+                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:Cast(Unit) then
                     return true
                 end
             end
@@ -135,12 +128,12 @@ function Warlock.Rotation()
         end
         --Corruption
         if Setting("Corruption") and (not Player.Moving or Talent.ImprovedCorruption.Rank == 5) then
-            if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and Target.Facing and not Debuff.Corruption:Exist(Target) and Target.TTD > 7 and Spell.Corruption:Cast(Target) then
+            if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and Target.CreatureType ~= "Totem" and Target.Facing and not Debuff.Corruption:Exist(Target) and Target.TTD > 7 and Spell.Corruption:Cast(Target) then
                 return true
             end
             if Setting("Cycle Corruption") then
                 for _, Unit in ipairs(Enemy30Y) do
-                    if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Unit.Pointer)) and Unit.Facing and not Debuff.Corruption:Exist(Unit) and Unit.TTD > 7 and Spell.Corruption:Cast(Unit) then
+                    if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Unit.Pointer)) and Unit.CreatureType ~= "Totem" and Unit.Facing and not Debuff.Corruption:Exist(Unit) and Unit.TTD > 7 and Spell.Corruption:Cast(Unit) then
                         return true
                     end
                 end
@@ -148,12 +141,12 @@ function Warlock.Rotation()
         end
         --SL
         if Setting("Siphon Life") then
-            if not Debuff.SiphonLife:Exist(Target) and Target.TTD > 10 and Spell.SiphonLife:Cast(Target) then
+            if not Debuff.SiphonLife:Exist(Target) and Target.TTD > 10 and Target.CreatureType ~= "Totem" and Spell.SiphonLife:Cast(Target) then
                 return true
             end
             if Setting("Cycle Siphon Life") then
                 for _, Unit in ipairs(Enemy30Y) do
-                    if not Debuff.SiphonLife:Exist(Unit) and Unit.TTD > 10 and Spell.SiphonLife:Cast(Unit) then
+                    if not Debuff.SiphonLife:Exist(Unit) and Unit.TTD > 10 and Unit.CreatureType ~= "Totem" and Spell.SiphonLife:Cast(Unit) then
                         return true
                     end
                 end
@@ -161,12 +154,12 @@ function Warlock.Rotation()
         end
         --CoA
         if Setting("Curse of Agony") then
-            if not Debuff.CurseOfAgony:Exist(Target) and Target.TTD > 10 and Spell.CurseOfAgony:Cast(Target) then
+            if not Debuff.CurseOfAgony:Exist(Target) and Target.TTD > 10 and Target.CreatureType ~= "Totem" and Spell.CurseOfAgony:Cast(Target) then
                 return true
             end
             if Setting("Cycle Curse of Agony") then
                 for _, Unit in ipairs(Enemy30Y) do
-                    if not Debuff.CurseOfAgony:Exist(Unit) and Unit.TTD > 10 and Spell.CurseOfAgony:Cast(Unit) then
+                    if not Debuff.CurseOfAgony:Exist(Unit) and Unit.TTD > 10 and Unit.CreatureType ~= "Totem" and Spell.CurseOfAgony:Cast(Unit) then
                         return true
                     end
                 end
@@ -174,12 +167,12 @@ function Warlock.Rotation()
         end
         --Immolate
         if Setting("Immolate") and not Player.Moving then
-            if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and Target.Facing and not Debuff.Immolate:Exist(Target) and Target.TTD > 10 and Spell.Immolate:Cast(Target) then
+            if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and Target.CreatureType ~= "Totem" and Target.Facing and not Debuff.Immolate:Exist(Target) and Target.TTD > 10 and Spell.Immolate:Cast(Target) then
                 return true
             end
             if Setting("Cycle Immolate") then
                 for _, Unit in ipairs(Enemy30Y) do
-                    if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Unit.Pointer)) and Unit.Facing and not Debuff.Immolate:Exist(Unit) and Unit.TTD > 10 and Spell.Immolate:Cast(Unit) then
+                    if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Unit.Pointer)) and Unit.CreatureType ~= "Totem" and Unit.Facing and not Debuff.Immolate:Exist(Unit) and Unit.TTD > 10 and Spell.Immolate:Cast(Unit) then
                         return true
                     end
                 end
