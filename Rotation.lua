@@ -51,7 +51,7 @@ local function Defensive()
     if Setting("Healthstone") and Player.HP < Setting("Healthstone HP") and (Item.MajorHealthstone:Use(Player) or Item.GreaterHealthstone:Use(Player) or Item.Healthstone:Use(Player) or Item.LesserHealthstone:Use(Player) or Item.MinorHealthstone:Use(Player)) then
         return true
     end
-    if Setting("Drain Life") and Player.HP < Setting("Drain Life HP") and Spell.DrainLife:Cast(Target) and not (Target.CreatureType == "Mechanical" or Target.CreatureType == "Elemental") then
+    if Setting("Drain Life") and Player.HP < Setting("Drain Life HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
         return true
     end
     if Setting("Health Funnel") and Pet and not Pet.Dead and Pet.HP < Setting("Health Funnel HP") and Target.TTD > 2 and Player.HP > 60 and Spell.HealthFunnel:Cast(Pet) then
@@ -192,6 +192,9 @@ function Warlock.Rotation()
             return true
         end
         if Setting("Shadow Bolt Mode") == 3 and Target.Facing and Player.PowerPct > Setting("Shadowbolt Mana") and Buff.Nightfall:Exist(Player) and Spell.ShadowBolt:Cast(Target) then
+            return true
+        end
+        if Setting("Drain Life Filler") and Player.HP < Setting("Drain Life Filler HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
             return true
         end
         if DMW.Player.Equipment[18] and Target.Facing then
