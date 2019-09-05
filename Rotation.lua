@@ -48,7 +48,7 @@ local function Wand()
 end
 
 local function Defensive()
-    if Setting("Healthstone") and Player.HP < Setting("Healthstone HP") and Item.MinorHealthstone:Use(Player) then
+    if Setting("Healthstone") and Player.HP < Setting("Healthstone HP") and (Item.MajorHealthstone:Use(Player) or Item.GreaterHealthstone:Use(Player) or Item.Healthstone:Use(Player) or Item.LesserHealthstone:Use(Player) or Item.MinorHealthstone:Use(Player)) then
         return true
     end
     if Setting("Drain Life") and Player.HP < Setting("Drain Life HP") and Spell.DrainLife:Cast(Target) and not (Target.CreatureType == "Mechanical" or Target.CreatureType == "Elemental") then
@@ -56,6 +56,18 @@ local function Defensive()
     end
     if Setting("Health Funnel") and Pet and not Pet.Dead and Pet.HP < Setting("Health Funnel HP") and Target.TTD > 2 and Player.HP > 60 and Spell.HealthFunnel:Cast(Pet) then
         return true
+    end
+end
+
+local function DemonBuff()
+    if Spell.DemonArmor:Known() then
+        if Buff.DemonArmor:Remain() < 300 and Spell.DemonArmor:Cast(Player) then
+            return true
+        end
+    elseif Spell.DemonSkin:Known() then
+        if Buff.DemonSkin:Remain() < 300 and Spell.DemonSkin:Cast(Player) then
+            return true
+        end
     end
 end
 
@@ -71,7 +83,7 @@ function Warlock.Rotation()
         elseif Setting("Pet") == 5 and not Spell.SummonFelhunter:LastCast() and Spell.SummonFelhunter:Cast(Player) then
             return true
         end
-    end   
+    end
     if Setting("Auto Delete Shards") then
         DeleteShards(Setting("Max Shards"))
     end
@@ -80,21 +92,24 @@ function Warlock.Rotation()
             return true
         end
     end
+    if not Player.Combat then
+        DemonBuff()
+    end
     if Target and Target.ValidEnemy and Target.Distance < 40 then
         if Defensive() then
             return true
         end
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 12) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.2 then
+                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.2 then
                     if IsAutoRepeatSpell(Spell.Shoot.SpellName) then
                         MoveForwardStart()
                         MoveForwardStop()
                         WandTime = DMW.Time
-                    end
-                    if Spell.DrainSoul:Cast(Target) then
                         return true
                     end
+                    Spell.DrainSoul:Cast(Unit)
+                    return true
                 end
             end
         end
@@ -131,6 +146,19 @@ function Warlock.Rotation()
                 end
             end
         end
+        --SL
+        if Setting("Siphon Life") then
+            if not Debuff.SiphonLife:Exist(Target) and Target.TTD > 10 and Spell.SiphonLife:Cast(Target) then
+                return true
+            end
+            if Setting("Cycle Siphon Life") then
+                for _, Unit in ipairs(Enemy30Y) do
+                    if not Debuff.SiphonLife:Exist(Unit) and Unit.TTD > 10 and Spell.SiphonLife:Cast(Unit) then
+                        return true
+                    end
+                end
+            end
+        end
         --CoA
         if Setting("Curse of Agony") then
             if not Debuff.CurseOfAgony:Exist(Target) and Target.TTD > 10 and Spell.CurseOfAgony:Cast(Target) then
@@ -157,10 +185,13 @@ function Warlock.Rotation()
                 end
             end
         end
-        if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < 20 and Spell.LifeTap:Cast(Player) then
+        if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
             return true
         end
-        if Setting("Shadow Bolt") and Target.Facing and not Player.Moving and Player.PowerPct > 35 and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
+        if Setting("Shadow Bolt Mode") == 2 and Target.Facing and not Player.Moving and Player.PowerPct > Setting("Shadowbolt Mana") and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
+            return true
+        end
+        if Setting("Shadow Bolt Mode") == 3 and Target.Facing and Player.PowerPct > Setting("Shadowbolt Mana") and Buff.Nightfall:Exist(Player) and Spell.ShadowBolt:Cast(Target) then
             return true
         end
         if DMW.Player.Equipment[18] and Target.Facing then
