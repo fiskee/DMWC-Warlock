@@ -125,7 +125,7 @@ function Warlock.Rotation()
         if Setting("Auto Buff") and DemonBuff() then
             return true
         end
-        if Setting("Create Healthstone") and CreateHealthstone() then
+        if not Player.Moving and Setting("Create Healthstone") and CreateHealthstone() then
             return true
         end
     end
