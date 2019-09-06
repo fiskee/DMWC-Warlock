@@ -71,6 +71,30 @@ local function DemonBuff()
     end
 end
 
+local function CreateHealthstone()
+    if Spell.CreateHealthstoneMajor:Known() then
+        if not Spell.CreateHealthstoneMajor:LastCast() and not Item.MajorHealthstone:Useable() and Spell.CreateHealthstoneMajor:Cast(Player) then
+            return true
+        end
+    elseif Spell.CreateHealthstoneGreater:Known() then
+        if not Spell.CreateHealthstoneGreater:LastCast() and not Item.GreaterHealthstone:Useable() and Spell.CreateHealthstoneGreater:Cast(Player) then
+            return true
+        end
+    elseif Spell.CreateHealthstone:Known() then
+        if not Spell.CreateHealthstone:LastCast() and not Item.Healthstone:Useable() and Spell.CreateHealthstone:Cast(Player) then
+            return true
+        end
+    elseif Spell.CreateHealthstoneLesser:Known() then
+        if not Spell.CreateHealthstoneLesser:LastCast() and not Item.LesserHealthstone:Useable() and Spell.CreateHealthstoneLesser:Cast(Player) then
+            return true
+        end
+    elseif Spell.CreateHealthstoneMinor:Known() then
+        if not Spell.CreateHealthstoneMinor:LastCast() and not Item.MinorHealthstone:Useable() and Spell.CreateHealthstoneMinor:Cast(Player) then
+            return true
+        end
+    end
+end
+
 function Warlock.Rotation()
     Locals()
     if not Player.Combat and not Player.Moving and (not Pet or Pet.Dead) and Setting("Pet") ~= 1 then
@@ -98,7 +122,12 @@ function Warlock.Rotation()
         end
     end
     if not Player.Combat then
-        DemonBuff()
+        if Setting("Auto Buff") and DemonBuff() then
+            return true
+        end
+        if Setting("Create Healthstone") and CreateHealthstone() then
+            return true
+        end
     end
     if Target and Target.ValidEnemy and Target.Distance < 40 then
         if Defensive() then
@@ -195,8 +224,8 @@ function Warlock.Rotation()
         if Setting("Drain Life Filler") and Player.HP < Setting("Drain Life Filler HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
             return true
         end
-        if DMW.Player.Equipment[18] and Target.Facing then
-            Wand()
+        if DMW.Player.Equipment[18] and Target.Facing and Wand() then
+            return true
         end
     end
 end

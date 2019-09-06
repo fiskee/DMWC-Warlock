@@ -15,6 +15,8 @@ function Warlock.Settings()
     -- }
     UI.AddHeader("General")
     UI.AddDropdown("Pet", nil, {"Disabled", "Imp", "Voidwalker", "Succubus", "Felhunter"}, 1)
+    UI.AddToggle("Auto Buff", "Auto buff with Demon Skin/Armor", true)
+    UI.AddToggle("Create Healthstone", nil, true)
     UI.AddToggle("Life Tap", nil, true)
     UI.AddRange("Life Tap Mana", "Mana pct to use Life Tap", 0, 100, 1, 60)
     UI.AddRange("Life Tap HP", "Minimum player hp to use Life Tap", 0, 100, 1, 80)
