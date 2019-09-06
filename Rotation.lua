@@ -92,6 +92,11 @@ function Warlock.Rotation()
             return true
         end
     end
+    if Player.Combat and Setting("Auto Target") then
+        if Player:AutoTarget(30, true) then
+            return true
+        end
+    end
     if not Player.Combat then
         DemonBuff()
     end
