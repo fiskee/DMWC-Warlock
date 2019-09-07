@@ -133,6 +133,10 @@ function Warlock.Rotation()
         if Defensive() then
             return true
         end
+        --Force refresh on fear
+        if Setting("Corruption") and Debuff.Fear:Exist(Target) and Spell.Fear:LastCast() and Debuff.Corruption:Remain(Target) < 5 and (not Player.Moving or Talent.ImprovedCorruption.Rank == 5) and Spell.Corruption:Cast(Target) then
+            return true
+        end
         if not Player.Moving and Setting("Drain Soul Snipe") then
             for _, Unit in ipairs(Enemy30Y) do
                 if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:Cast(Unit) then
