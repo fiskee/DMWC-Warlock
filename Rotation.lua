@@ -73,23 +73,23 @@ end
 
 local function CreateHealthstone()
     if Spell.CreateHealthstoneMajor:Known() then
-        if not Spell.CreateHealthstoneMajor:LastCast() and not Item.MajorHealthstone:Useable() and Spell.CreateHealthstoneMajor:Cast(Player) then
+        if not Spell.CreateHealthstoneMajor:LastCast() and GetItemCount(Item.MajorHealthstone.ItemName) == 0 and Spell.CreateHealthstoneMajor:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstoneGreater:Known() then
-        if not Spell.CreateHealthstoneGreater:LastCast() and not Item.GreaterHealthstone:Useable() and Spell.CreateHealthstoneGreater:Cast(Player) then
+        if not Spell.CreateHealthstoneGreater:LastCast() and GetItemCount(Item.GreaterHealthstone.ItemName) == 0 and Spell.CreateHealthstoneGreater:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstone:Known() then
-        if not Spell.CreateHealthstone:LastCast() and not Item.Healthstone:Useable() and Spell.CreateHealthstone:Cast(Player) then
+        if not Spell.CreateHealthstone:LastCast() and GetItemCount(Item.Healthstone.ItemName) == 0 and Spell.CreateHealthstone:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstoneLesser:Known() then
-        if not Spell.CreateHealthstoneLesser:LastCast() and not Item.LesserHealthstone:Useable() and Spell.CreateHealthstoneLesser:Cast(Player) then
+        if not Spell.CreateHealthstoneLesser:LastCast() and GetItemCount(Item.LesserHealthstone.ItemName) == 0 and Spell.CreateHealthstoneLesser:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstoneMinor:Known() then
-        if not Spell.CreateHealthstoneMinor:LastCast() and not Item.MinorHealthstone:Useable() and Spell.CreateHealthstoneMinor:Cast(Player) then
+        if not Spell.CreateHealthstoneMinor:LastCast() and GetItemCount(Item.MinorHealthstone.ItemName) == 0 and Spell.CreateHealthstoneMinor:Cast(Player) then
             return true
         end
     end
