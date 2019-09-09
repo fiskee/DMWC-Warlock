@@ -222,7 +222,7 @@ function Warlock.Rotation()
         if Setting("Shadow Bolt Mode") == 2 and Target.Facing and not Player.Moving and Player.PowerPct > Setting("Shadow Bolt Mana") and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
             return true
         end
-        if Setting("Shadow Bolt Mode") == 3 and Target.Facing and Player.PowerPct > Setting("Shadow Bolt Mana") and Buff.Nightfall:Exist(Player) and Spell.ShadowBolt:Cast(Target) then
+        if Setting("Shadow Bolt Mode") == 3 and Target.Facing and Player.PowerPct > Setting("Shadow Bolt Mana") and Buff.ShadowTrance:Exist(Player) and Spell.ShadowBolt:Cast(Target) then
             return true
         end
         if Setting("Drain Life Filler") and Player.HP < Setting("Drain Life Filler HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
