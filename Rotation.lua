@@ -38,7 +38,7 @@ local function DeleteShards(Max)
 end
 
 local function Wand()
-    if not Player.Moving and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and (Target.Distance > 1 or not Setting("Auto Attack In Melee")) and
+    if not Player.Moving and not DMW.Helpers.Queue.Spell and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and (Target.Distance > 1 or not Setting("Auto Attack In Melee")) and
     (Player.PowerPct < 10 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10) and 
     (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 10) and 
     (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7))) and Spell.Shoot:Cast(Target) then
