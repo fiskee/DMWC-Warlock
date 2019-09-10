@@ -54,9 +54,12 @@ end
 
 local function Wand()
     if not Player.Moving and not DMW.Helpers.Queue.Spell and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and (Target.Distance > 1 or not Setting("Auto Attack In Melee")) and
-    (Player.PowerPct < 10 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10) and 
-    (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 10) and 
-    (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7))) and Spell.Shoot:Cast(Target) then
+    (Player.PowerPct < 10 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
+    (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
+    (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7 or Target.CreatureType == "Totem") and
+    (not Setting("Siphon Life") or Debuff.SiphonLife:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and
+    (not Setting("Drain Life Filler") or Player.HP > Setting("Drain Life Filler HP") or Target.CreatureType == "Mechanical")))
+    and Spell.Shoot:Cast(Target) then
         WandTime = DMW.Time
         return true
     end
@@ -240,7 +243,7 @@ function Warlock.Rotation()
         if Setting("Shadow Bolt Mode") == 3 and Target.Facing and Player.PowerPct > Setting("Shadow Bolt Mana") and Buff.ShadowTrance:Exist(Player) and Spell.ShadowBolt:Cast(Target) then
             return true
         end
-        if Setting("Drain Life Filler") and Player.HP < Setting("Drain Life Filler HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
+        if Setting("Drain Life Filler") and Player.HP <= Setting("Drain Life Filler HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
             return true
         end
         if DMW.Player.Equipment[18] and Target.Facing and Wand() then
