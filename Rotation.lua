@@ -146,7 +146,7 @@ function Warlock.Rotation()
         if not Player.Moving and Setting("Create Healthstone") and CreateHealthstone() then
             return true
         end
-        if Setting("Life Tap OOC") and Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
+        if Setting("Life Tap OOC") and Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
             return true
         end
     end
@@ -237,7 +237,7 @@ function Warlock.Rotation()
                 end
             end
         end
-        if Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
+        if Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
             return true
         end
         if Setting("Shadow Bolt Mode") == 2 and Target.Facing and not Player.Moving and Player.PowerPct > Setting("Shadow Bolt Mana") and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
