@@ -58,7 +58,7 @@ local function Wand()
     (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
     (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7 or Target.CreatureType == "Totem") and
     (not Setting("Siphon Life") or Debuff.SiphonLife:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and
-    (not Setting("Drain Life Filler") or Player.HP > Setting("Drain Life Filler HP") or Target.CreatureType == "Mechanical" or Target.TTD < 3)))
+    (not Setting("Drain Life Filler") or Player.HP > Setting("Drain Life Filler HP") or Target.CreatureType == "Mechanical" or Target.TTD < 3 or Target.Distance > Spell.DrainLife.MaxRange)))
     and Spell.Shoot:Cast(Target) then
         WandTime = DMW.Time
         return true
