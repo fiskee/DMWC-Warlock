@@ -146,6 +146,9 @@ function Warlock.Rotation()
         if not Player.Moving and Setting("Create Healthstone") and CreateHealthstone() then
             return true
         end
+        if Setting("Life Tap OOC") and Setting("Life Tap") and Player.HP > Setting("Life Tap HP") and Player.PowerPct < Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
+            return true
+        end
     end
     if Target and Target.ValidEnemy and Target.Distance < 40 then
         if Defensive() then
