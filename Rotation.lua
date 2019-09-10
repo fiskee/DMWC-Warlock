@@ -21,6 +21,21 @@ local function Locals()
     Enemy30Y, Enemy30YC = Player:GetEnemies(30)
 end
 
+local function HasItem(Name)
+    local TempName
+    for Bag = 0, 4, 1 do
+        for Slot = 1, GetContainerNumSlots(Bag), 1 do
+            local ItemID = GetContainerItemID(Bag, Slot)
+            if ItemID then
+                TempName = GetItemInfo(ItemID)
+                if TempName == Name then
+                    return true
+                end
+            end
+        end
+    end
+end
+
 local function DeleteShards(Max)
     local Count = 1
     for Bag = 0, 4, 1 do
@@ -73,23 +88,23 @@ end
 
 local function CreateHealthstone()
     if Spell.CreateHealthstoneMajor:Known() then
-        if not Spell.CreateHealthstoneMajor:LastCast() and GetItemCount(Item.MajorHealthstone.ItemName) == 0 and Spell.CreateHealthstoneMajor:Cast(Player) then
+        if not Spell.CreateHealthstoneMajor:LastCast() and not HasItem(Item.MajorHealthstone.ItemName) and Spell.CreateHealthstoneMajor:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstoneGreater:Known() then
-        if not Spell.CreateHealthstoneGreater:LastCast() and GetItemCount(Item.GreaterHealthstone.ItemName) == 0 and Spell.CreateHealthstoneGreater:Cast(Player) then
+        if not Spell.CreateHealthstoneGreater:LastCast() and not HasItem(Item.GreaterHealthstone.ItemName) and Spell.CreateHealthstoneGreater:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstone:Known() then
-        if not Spell.CreateHealthstone:LastCast() and GetItemCount(Item.Healthstone.ItemName) == 0 and Spell.CreateHealthstone:Cast(Player) then
+        if not Spell.CreateHealthstone:LastCast() and not HasItem(Item.Healthstone.ItemName) and Spell.CreateHealthstone:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstoneLesser:Known() then
-        if not Spell.CreateHealthstoneLesser:LastCast() and GetItemCount(Item.LesserHealthstone.ItemName) == 0 and Spell.CreateHealthstoneLesser:Cast(Player) then
+        if not Spell.CreateHealthstoneLesser:LastCast() and not HasItem(Item.LesserHealthstone.ItemName) and Spell.CreateHealthstoneLesser:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstoneMinor:Known() then
-        if not Spell.CreateHealthstoneMinor:LastCast() and GetItemCount(Item.MinorHealthstone.ItemName) == 0 and Spell.CreateHealthstoneMinor:Cast(Player) then
+        if not Spell.CreateHealthstoneMinor:LastCast() and not HasItem(Item.MinorHealthstone.ItemName) and Spell.CreateHealthstoneMinor:Cast(Player) then
             return true
         end
     end
