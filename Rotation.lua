@@ -58,7 +58,7 @@ local function Wand()
     (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
     (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7 or Target.CreatureType == "Totem") and
     (not Setting("Siphon Life") or Debuff.SiphonLife:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and
-    (not Setting("Drain Life Filler") or Player.HP > Setting("Drain Life Filler HP") or Target.CreatureType == "Mechanical")))
+    (not Setting("Drain Life Filler") or Player.HP > Setting("Drain Life Filler HP") or Target.CreatureType == "Mechanical" or Target.TTD < 3)))
     and Spell.Shoot:Cast(Target) then
         WandTime = DMW.Time
         return true
@@ -243,7 +243,7 @@ function Warlock.Rotation()
         if Setting("Shadow Bolt Mode") == 3 and Target.Facing and Player.PowerPct > Setting("Shadow Bolt Mana") and Buff.ShadowTrance:Exist(Player) and Spell.ShadowBolt:Cast(Target) then
             return true
         end
-        if Setting("Drain Life Filler") and Player.HP <= Setting("Drain Life Filler HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
+        if Setting("Drain Life Filler") and Player.HP <= Setting("Drain Life Filler HP") and Target.CreatureType ~= "Mechanical" and Target.TTD > 3 and Spell.DrainLife:Cast(Target) then
             return true
         end
         if DMW.Player.Equipment[18] and Target.Facing and Wand() then
