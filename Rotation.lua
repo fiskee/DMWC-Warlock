@@ -55,10 +55,10 @@ end
 local function Wand()
     if not Player.Moving and not DMW.Helpers.Queue.Spell and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and (Target.Distance > 1 or not Setting("Auto Attack In Melee")) and
     (Player.PowerPct < 10 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
-    (not Setting("Immolate") or Debuff.Immolate:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
-    (not Setting("Corruption") or Debuff.Corruption:Exist(Target) or Target.TTD < 7 or Target.CreatureType == "Totem") and
-    (not Setting("Siphon Life") or Debuff.SiphonLife:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and
-    (not Setting("Drain Life Filler") or Player.HP > Setting("Drain Life Filler HP") or Target.CreatureType == "Mechanical" or Target.TTD < 3 or Target.Distance > Spell.DrainLife.MaxRange)))
+    (not Setting("Immolate") or not Spell.Immolate:Known() or Debuff.Immolate:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
+    (not Setting("Corruption") or not Spell.Corruption:Known() or Debuff.Corruption:Exist(Target) or Target.TTD < 7 or Target.CreatureType == "Totem") and
+    (not Setting("Siphon Life") or not Spell.SiphonLife:Known() or Debuff.SiphonLife:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and
+    (not Setting("Drain Life Filler") or not Spell.DrainLife:Known() or Player.HP > Setting("Drain Life Filler HP") or Target.CreatureType == "Mechanical" or Target.TTD < 3 or Target.Distance > Spell.DrainLife.MaxRange)))
     and Spell.Shoot:Cast(Target) then
         WandTime = DMW.Time
         return true
