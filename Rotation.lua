@@ -198,7 +198,7 @@ function Warlock.Rotation()
                 if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and Target.CreatureType ~= "Totem" and Target.Facing and not Debuff.Corruption:Exist(Target) and Target.TTD > 7 and Spell.Corruption:Cast(Target) then
                     return true
                 end
-                if Setting("Cycle Corruption") then
+                if Setting("Cycle Corruption") and Debuff.Corruption:Count() < Setting("Multidot Limit") then
                     for _, Unit in ipairs(Enemy30Y) do
                         if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Unit.Pointer)) and Unit.CreatureType ~= "Totem" and Unit.Facing and not Debuff.Corruption:Exist(Unit) and Unit.TTD > 7 and Spell.Corruption:Cast(Unit) then
                             return true
@@ -211,7 +211,7 @@ function Warlock.Rotation()
                 if not Debuff.SiphonLife:Exist(Target) and Target.TTD > 10 and Target.CreatureType ~= "Totem" and Spell.SiphonLife:Cast(Target) then
                     return true
                 end
-                if Setting("Cycle Siphon Life") then
+                if Setting("Cycle Siphon Life") and Debuff.SiphonLife:Count() < Setting("Multidot Limit") then
                     for _, Unit in ipairs(Enemy30Y) do
                         if not Debuff.SiphonLife:Exist(Unit) and Unit.TTD > 10 and Unit.CreatureType ~= "Totem" and Spell.SiphonLife:Cast(Unit) then
                             return true
@@ -224,7 +224,7 @@ function Warlock.Rotation()
                 if not Debuff.CurseOfAgony:Exist(Target) and Target.TTD > 10 and Target.CreatureType ~= "Totem" and Spell.CurseOfAgony:Cast(Target) then
                     return true
                 end
-                if Setting("Cycle Curse of Agony") then
+                if Setting("Cycle Curse of Agony") and Debuff.CurseOfAgony:Count() < Setting("Multidot Limit") then
                     for _, Unit in ipairs(Enemy30Y) do
                         if not Debuff.CurseOfAgony:Exist(Unit) and Unit.TTD > 10 and Unit.CreatureType ~= "Totem" and Spell.CurseOfAgony:Cast(Unit) then
                             return true
@@ -237,7 +237,7 @@ function Warlock.Rotation()
                 if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and Target.CreatureType ~= "Totem" and Target.Facing and not Debuff.Immolate:Exist(Target) and Target.TTD > 10 and Spell.Immolate:Cast(Target) then
                     return true
                 end
-                if Setting("Cycle Immolate") then
+                if Setting("Cycle Immolate") and Debuff.Immolate:Count() < Setting("Multidot Limit") then
                     for _, Unit in ipairs(Enemy30Y) do
                         if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Unit.Pointer)) and Unit.CreatureType ~= "Totem" and Unit.Facing and not Debuff.Immolate:Exist(Unit) and Unit.TTD > 10 and Spell.Immolate:Cast(Unit) then
                             return true
