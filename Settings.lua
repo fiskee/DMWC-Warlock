@@ -50,4 +50,6 @@ function Warlock.Settings()
     UI.AddToggle("Drain Soul Snipe", "Try to auto snipe enemies with drain soul, useful for shard farming or Improved Drain Soul talent", false)
     UI.AddToggle("Auto Delete Shards", "Activate automatic deletion of shards from bags, set max below", false)
     UI.AddRange("Max Shards", "Control max number of shards in bag", 0, 20, 1, 4)
+    --
+    DMW.Helpers.Rotation.CastingCheck = false
 end
