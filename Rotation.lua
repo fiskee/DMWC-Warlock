@@ -54,7 +54,7 @@ end
 
 local function Wand()
     if not Player.Moving and not DMW.Helpers.Queue.Spell and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and (Target.Distance > 1 or not Setting("Auto Attack In Melee")) and
-    (Player.PowerPct < 10 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
+    (Player.PowerPct < 10 or Spell.ShadowBolt:CD() > 2 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
     (not Setting("Immolate") or not Spell.Immolate:Known() or Debuff.Immolate:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
     (not Setting("Corruption") or not Spell.Corruption:Known() or Debuff.Corruption:Exist(Target) or Target.TTD < 7 or Target.CreatureType == "Totem") and
     (not Setting("Siphon Life") or not Spell.SiphonLife:Known() or Debuff.SiphonLife:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and
@@ -148,6 +148,9 @@ function Warlock.Rotation()
                 return true
             end
             if Setting("Life Tap OOC") and Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
+                return true
+            end
+            if Pet and not Pet.Dead and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and Spell.DarkPact:Cast(Player) then
                 return true
             end
         end
@@ -246,6 +249,9 @@ function Warlock.Rotation()
                 end
             end
             if Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
+                return true
+            end
+            if Pet and not Pet.Dead and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and not Spell.DarkPact:LastCast() and Spell.DarkPact:Cast(Player) then
                 return true
             end
             if Setting("Shadow Bolt Mode") == 2 and Target.Facing and not Player.Moving and Player.PowerPct > Setting("Shadow Bolt Mana") and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
