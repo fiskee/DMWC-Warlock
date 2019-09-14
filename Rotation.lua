@@ -2,7 +2,7 @@ local DMW = DMW
 local Warlock = DMW.Rotations.WARLOCK
 local Rotation = DMW.Helpers.Rotation
 local Setting = DMW.Helpers.Rotation.Setting
-local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy20Y, Enemy20YC, Enemy30Y, Enemy30YC, NewTarget
+local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy20Y, Enemy20YC, Enemy30Y, Enemy30YC, NewTarget, ShardCount
 local WandTime = GetTime()
 local PetAttackTime = GetTime()
 
@@ -36,20 +36,22 @@ local function HasItem(Name)
     end
 end
 
-local function DeleteShards(Max)
-    local Count = 1
+local function Shards(Max)
+    local Count = 0
     for Bag = 0, 4, 1 do
         for Slot = 1, GetContainerNumSlots(Bag), 1 do
             local ItemID = GetContainerItemID(Bag, Slot)
             if ItemID and ItemID == 6265 then
-                if Count > Max then
+                if Count >= Max then
                     PickupContainerItem(Bag, Slot)
                     DeleteCursorItem()
+                else
+                    Count = Count + 1
                 end
-                Count = Count + 1
             end
         end
     end
+    return Count
 end
 
 local function Wand()
@@ -69,10 +71,10 @@ local function Defensive()
     if Setting("Healthstone") and Player.HP < Setting("Healthstone HP") and (Item.MajorHealthstone:Use(Player) or Item.GreaterHealthstone:Use(Player) or Item.Healthstone:Use(Player) or Item.LesserHealthstone:Use(Player) or Item.MinorHealthstone:Use(Player)) then
         return true
     end
-    if Setting("Drain Life") and Player.HP < Setting("Drain Life HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
+    if not Player.Casting and Setting("Drain Life") and Player.HP < Setting("Drain Life HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
         return true
     end
-    if Setting("Health Funnel") and Pet and not Pet.Dead and Pet.HP < Setting("Health Funnel HP") and Target.TTD > 2 and Player.HP > 60 and Spell.HealthFunnel:Cast(Pet) then
+    if not Player.Casting and Setting("Health Funnel") and Pet and not Pet.Dead and Pet.HP < Setting("Health Funnel HP") and Target.TTD > 2 and Player.HP > 60 and Spell.HealthFunnel:Cast(Pet) then
         return true
     end
 end
@@ -127,9 +129,7 @@ function Warlock.Rotation()
                 return true
             end
         end
-        if Setting("Auto Delete Shards") then
-            DeleteShards(Setting("Max Shards"))
-        end
+        ShardCount = Shards(Setting("Max Shards"))
         if Setting("Auto Target Quest Units") then
             if Player:AutoTargetQuest(30, true) then
                 return true
@@ -160,16 +160,16 @@ function Warlock.Rotation()
             TargetUnit(NewTarget.Pointer)
             NewTarget = false
         end
+        if Defensive() then
+            return true
+        end
         if not Player.Casting then
-            if Defensive() then
-                return true
-            end
             --Force refresh on fear
             if Setting("Corruption") and Debuff.Fear:Exist(Target) and Spell.Fear:LastCast() and Debuff.Corruption:Remain(Target) < 5 and (not Player.Moving or Talent.ImprovedCorruption.Rank == 5) and Spell.Corruption:Cast(Target) then
                 return true
             end
         end
-        if not Player.Moving and Setting("Drain Soul Snipe") then
+        if not Player.Moving and Setting("Drain Soul Snipe") and (not Setting("Stop DS At Max Shards") or ShardCount < Setting("Max Shards")) then
             for _, Unit in ipairs(Enemy30Y) do
                 if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.2 then
                     if (not Player.Casting or Player.Casting ~= Spell.DrainSoul.SpellName) and Spell.DrainSoul:Cast(Unit) then
