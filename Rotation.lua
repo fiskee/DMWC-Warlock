@@ -2,7 +2,7 @@ local DMW = DMW
 local Warlock = DMW.Rotations.WARLOCK
 local Rotation = DMW.Helpers.Rotation
 local Setting = DMW.Helpers.Rotation.Setting
-local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy20Y, Enemy20YC, Enemy30Y, Enemy30YC
+local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy20Y, Enemy20YC, Enemy30Y, Enemy30YC, NewTarget
 local WandTime = GetTime()
 local PetAttackTime = GetTime()
 
@@ -54,7 +54,7 @@ end
 
 local function Wand()
     if not Player.Moving and not DMW.Helpers.Queue.Spell and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and (Target.Distance > 1 or not Setting("Auto Attack In Melee")) and
-    (Player.PowerPct < 10 or Spell.ShadowBolt:CD() > 2 or ((not Setting("Curse of Agony") or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
+    (Player.PowerPct < 10 or Spell.ShadowBolt:CD() > 2 or ((not Setting("Curse of Agony") or not Spell.CurseOfAgony:Known() or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
     (not Setting("Immolate") or not Spell.Immolate:Known() or Debuff.Immolate:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
     (not Setting("Corruption") or not Spell.Corruption:Known() or Debuff.Corruption:Exist(Target) or Target.TTD < 7 or Target.CreatureType == "Totem") and
     (not Setting("Siphon Life") or not Spell.SiphonLife:Known() or Debuff.SiphonLife:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and
@@ -150,12 +150,16 @@ function Warlock.Rotation()
             if Setting("Life Tap OOC") and Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
                 return true
             end
-            if Pet and not Pet.Dead and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and Spell.DarkPact:Cast(Player) then
+            if Pet and not Pet.Dead and Setting("Dark Pact OOC") and Setting("Dark Pact") and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and Spell.DarkPact:Cast(Player) then
                 return true
             end
         end
     end
     if Target and Target.ValidEnemy and Target.Distance < 40 then
+        if Player.Casting and Player.Casting == Spell.Fear.SpellName and NewTarget then
+            TargetUnit(NewTarget.Pointer)
+            NewTarget = false
+        end
         if not Player.Casting then
             if Defensive() then
                 return true
@@ -176,15 +180,17 @@ function Warlock.Rotation()
             end
         end
         if not Player.Casting then
-            if not Player.Moving and Setting("Fear Bonus Mobs") and Debuff.Fear:Count() == 0 and (not Spell.Fear:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7)) then
-                if Enemy20YC > 1 and not Player.InGroup then
-                    local CreatureType
+            if not Player.Moving and Setting("Fear Bonus Mobs") and Spell.Fear:IsReady() and Debuff.Fear:Count() == 0 and (not Spell.Fear:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7)) then
+                local CreatureType = Target.CreatureType
+                if Enemy20YC > 1 and not Player.InGroup and not (CreatureType == "Undead" or CreatureType == "Mechanical" or CreatureType == "Totem") and Target.TTD > 3 and not Target:IsBoss() and
+                (not Setting("Immolate") or not Spell.Immolate:Known() or Debuff.Immolate:Exist(Target) or Target.TTD < 10) and 
+                (not Setting("Corruption") or not Spell.Corruption:Known() or Debuff.Corruption:Exist(Target) or Target.TTD < 7) and
+                (not Setting("Siphon Life") or not Spell.SiphonLife:Known() or Debuff.SiphonLife:Exist(Target) or Target.TTD < 10) and 
+                (not Setting("Curse of Agony") or not Spell.CurseOfAgony:Known() or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10 ) then                    
                     for i, Unit in ipairs(Enemy20Y) do
-                        if i > 1 then
-                            CreatureType = Unit.CreatureType
-                            if Unit.TTD > 3 and not (CreatureType == "Undead" or CreatureType == "Mechanical" or CreatureType == "Totem") and not Unit:IsBoss() and Spell.Fear:Cast(Unit) then
-                                return true
-                            end
+                        if i > 1 and Unit.TTD > 3 and Spell.Fear:Cast(Target) then
+                            NewTarget = Unit
+                            return true
                         end
                     end
                 end
@@ -251,7 +257,7 @@ function Warlock.Rotation()
             if Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
                 return true
             end
-            if Pet and not Pet.Dead and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and not Spell.DarkPact:LastCast() and Spell.DarkPact:Cast(Player) then
+            if Pet and not Pet.Dead and Setting("Dark Pact") and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and not Spell.DarkPact:LastCast() and Spell.DarkPact:Cast(Player) then
                 return true
             end
             if Setting("Shadow Bolt Mode") == 2 and Target.Facing and not Player.Moving and Player.PowerPct > Setting("Shadow Bolt Mana") and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
@@ -260,7 +266,7 @@ function Warlock.Rotation()
             if Setting("Shadow Bolt Mode") == 3 and Target.Facing and Player.PowerPct > Setting("Shadow Bolt Mana") and Buff.ShadowTrance:Exist(Player) and Spell.ShadowBolt:Cast(Target) then
                 return true
             end
-            if Setting("Drain Life Filler") and Player.HP <= Setting("Drain Life Filler HP") and Target.CreatureType ~= "Mechanical" and (Target.Player or Target.TTD > 3) and Spell.DrainLife:Cast(Target) then
+            if Setting("Drain Life Filler") and not Player.Moving and Player.HP <= Setting("Drain Life Filler HP") and Target.CreatureType ~= "Mechanical" and (Target.Player or Target.TTD > 3) and Spell.DrainLife:Cast(Target) then
                 return true
             end
             if DMW.Player.Equipment[18] and Target.Facing and Wand() then
