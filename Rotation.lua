@@ -242,7 +242,7 @@ function Warlock.Rotation()
                 end
             end
             --Immolate
-            if (Setting("Immolate") or Spell.Shadowbolt:CD() > 2) and not Player.Moving then
+            if Setting("Immolate") and not Player.Moving then
                 if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and Target.CreatureType ~= "Totem" and Target.Facing and not Debuff.Immolate:Exist(Target) and Target.TTD > 10 and Spell.Immolate:Cast(Target) then
                     return true
                 end
