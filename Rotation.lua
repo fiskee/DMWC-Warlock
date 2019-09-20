@@ -257,7 +257,7 @@ function Warlock.Rotation()
             if Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
                 return true
             end
-            if Pet and not Pet.Dead and Setting("Dark Pact") and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and not Spell.DarkPact:LastCast() and Spell.DarkPact:Cast(Pet) then
+            if Pet and not Pet.Dead and Setting("Dark Pact") and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and not Spell.DarkPact:LastCast() and not Spell.LifeTap:LastCast() and Spell.DarkPact:Cast(Pet) then
                 return true
             end
             if Setting("Shadow Bolt Mode") == 2 and Target.Facing and not Player.Moving and Player.PowerPct > Setting("Shadow Bolt Mana") and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
