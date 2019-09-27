@@ -5,6 +5,7 @@ local Setting = DMW.Helpers.Rotation.Setting
 local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy20Y, Enemy20YC, Enemy30Y, Enemy30YC, NewTarget, ShardCount
 local WandTime = GetTime()
 local PetAttackTime = GetTime()
+local ItemUsage = GetTime()
 
 local function Locals()
     Player = DMW.Player
@@ -19,21 +20,6 @@ local function Locals()
     CDs = Player:CDs()
     Enemy20Y, Enemy20YC = Player:GetEnemies(20)
     Enemy30Y, Enemy30YC = Player:GetEnemies(30)
-end
-
-local function HasItem(Name)
-    local TempName
-    for Bag = 0, 4, 1 do
-        for Slot = 1, GetContainerNumSlots(Bag), 1 do
-            local ItemID = GetContainerItemID(Bag, Slot)
-            if ItemID then
-                TempName = GetItemInfo(ItemID)
-                if TempName == Name then
-                    return true
-                end
-            end
-        end
-    end
 end
 
 local function Shards(Max)
@@ -68,10 +54,15 @@ local function Wand()
 end
 
 local function Defensive()
-    if Setting("Healthstone") and Player.HP < Setting("Healthstone HP") and (Item.MajorHealthstone:Use(Player) or Item.GreaterHealthstone:Use(Player) or Item.Healthstone:Use(Player) or Item.LesserHealthstone:Use(Player) or Item.MinorHealthstone:Use(Player)) then
+    if Setting("Healthstone") and Player.HP < Setting("Healthstone HP") and (DMW.Time - ItemUsage) > 0.2 and (Item.MajorHealthstone:Use(Player) or Item.GreaterHealthstone:Use(Player) or Item.Healthstone:Use(Player) or Item.LesserHealthstone:Use(Player) or Item.MinorHealthstone:Use(Player)) then
+        ItemUsage = DMW.Time
         return true
     end
     if not Player.Casting and not Player.Moving and Setting("Drain Life") and Player.HP < Setting("Drain Life HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
+        return true
+    end
+    if Setting("Luffa") and Item.Luffa:Equipped() and (DMW.Time - ItemUsage) > 0.2 and Player:Dispel(Item.Luffa) and Item.Luffa:Use(Player) then
+        ItemUsage = DMW.Time
         return true
     end
     if not Player.Casting and not Player.Moving and Setting("Health Funnel") and Pet and not Pet.Dead and Pet.HP < Setting("Health Funnel HP") and Target.TTD > 2 and Player.HP > 60 and Spell.HealthFunnel:Cast(Pet) then
@@ -93,23 +84,47 @@ end
 
 local function CreateHealthstone()
     if Spell.CreateHealthstoneMajor:Known() then
-        if not Spell.CreateHealthstoneMajor:LastCast() and not HasItem(Item.MajorHealthstone.ItemName) and Spell.CreateHealthstoneMajor:Cast(Player) then
+        if not Spell.CreateHealthstoneMajor:LastCast() and not Item.MajorHealthstone:InBag() and Spell.CreateHealthstoneMajor:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstoneGreater:Known() then
-        if not Spell.CreateHealthstoneGreater:LastCast() and not HasItem(Item.GreaterHealthstone.ItemName) and Spell.CreateHealthstoneGreater:Cast(Player) then
+        if not Spell.CreateHealthstoneGreater:LastCast() and not Item.GreaterHealthstone:InBag() and Spell.CreateHealthstoneGreater:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstone:Known() then
-        if not Spell.CreateHealthstone:LastCast() and not HasItem(Item.Healthstone.ItemName) and Spell.CreateHealthstone:Cast(Player) then
+        if not Spell.CreateHealthstone:LastCast() and not Item.Healthstone:InBag() and Spell.CreateHealthstone:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstoneLesser:Known() then
-        if not Spell.CreateHealthstoneLesser:LastCast() and not HasItem(Item.LesserHealthstone.ItemName) and Spell.CreateHealthstoneLesser:Cast(Player) then
+        if not Spell.CreateHealthstoneLesser:LastCast() and not Item.LesserHealthstone:InBag() and Spell.CreateHealthstoneLesser:Cast(Player) then
             return true
         end
     elseif Spell.CreateHealthstoneMinor:Known() then
-        if not Spell.CreateHealthstoneMinor:LastCast() and not HasItem(Item.MinorHealthstone.ItemName) and Spell.CreateHealthstoneMinor:Cast(Player) then
+        if not Spell.CreateHealthstoneMinor:LastCast() and not Item.MinorHealthstone:InBag() and Spell.CreateHealthstoneMinor:Cast(Player) then
+            return true
+        end
+    end
+end
+
+local function CreateSoulstone()
+    if Spell.CreateSoulstoneMajor:Known() then
+        if not Spell.CreateSoulstoneMajor:LastCast() and not Item.MajorSoulstone:InBag() and Spell.CreateSoulstoneMajor:Cast(Player) then
+            return true
+        end
+    elseif Spell.CreateSoulstoneGreater:Known() then
+        if not Spell.CreateSoulstoneGreater:LastCast() and not Item.GreaterSoulstone:InBag() and Spell.CreateSoulstoneGreater:Cast(Player) then
+            return true
+        end
+    elseif Spell.CreateSoulstone:Known() then
+        if not Spell.CreateSoulstone:LastCast() and not Item.Soulstone:InBag() and Spell.CreateSoulstone:Cast(Player) then
+            return true
+        end
+    elseif Spell.CreateSoulstoneLesser:Known() then
+        if not Spell.CreateSoulstoneLesser:LastCast() and not Item.LesserSoulstone:InBag() and Spell.CreateSoulstoneLesser:Cast(Player) then
+            return true
+        end
+    elseif Spell.CreateSoulstoneMinor:Known() then
+        if not Spell.CreateSoulstoneMinor:LastCast() and not Item.MinorSoulstone:InBag() and Spell.CreateSoulstoneMinor:Cast(Player) then
             return true
         end
     end
@@ -145,6 +160,13 @@ function Warlock.Rotation()
                 return true
             end
             if not Player.Moving and Setting("Create Healthstone") and CreateHealthstone() then
+                return true
+            end
+            if not Player.Moving and Setting("Create Soulstone") and CreateSoulstone() then
+                return true
+            end
+            if Setting("Soulstone Player") and Player.Instance == "none" and (DMW.Time - ItemUsage) > 0.2 and not Buff.SoulstoneResurrection:Exist(Player) and (Item.MajorSoulstone:Use(Player) or Item.GreaterSoulstone:Use(Player) or Item.Soulstone:Use(Player) or Item.LesserSoulstone:Use(Player) or Item.MinorSoulstone:Use(Player)) then
+                ItemUsage = DMW.Time
                 return true
             end
             if Setting("Life Tap OOC") and Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
