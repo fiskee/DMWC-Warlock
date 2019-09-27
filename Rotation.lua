@@ -165,7 +165,7 @@ function Warlock.Rotation()
             if not Player.Moving and Setting("Create Soulstone") and CreateSoulstone() then
                 return true
             end
-            if Setting("Soulstone Player") and Player.Instance == "none" and (DMW.Time - ItemUsage) > 0.2 and not Buff.SoulstoneResurrection:Exist(Player) and (Item.MajorSoulstone:Use(Player) or Item.GreaterSoulstone:Use(Player) or Item.Soulstone:Use(Player) or Item.LesserSoulstone:Use(Player) or Item.MinorSoulstone:Use(Player)) then
+            if Setting("Soulstone Player") and not Player.Moving and Player.Instance == "none" and (DMW.Time - ItemUsage) > 0.2 and not Buff.SoulstoneResurrection:Exist(Player) and (Item.MajorSoulstone:Use(Player) or Item.GreaterSoulstone:Use(Player) or Item.Soulstone:Use(Player) or Item.LesserSoulstone:Use(Player) or Item.MinorSoulstone:Use(Player)) then
                 ItemUsage = DMW.Time
                 return true
             end
