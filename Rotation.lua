@@ -2,10 +2,36 @@ local DMW = DMW
 local Warlock = DMW.Rotations.WARLOCK
 local Rotation = DMW.Helpers.Rotation
 local Setting = DMW.Helpers.Rotation.Setting
-local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy20Y, Enemy20YC, Enemy30Y, Enemy30YC, NewTarget, ShardCount
+local Player, Pet, Buff, Debuff, Spell, Target, Talent, Item, GCD, CDs, HUD, Enemy20Y, Enemy20YC, Enemy30Y, Enemy30YC, NewTarget, ShardCount, Curse
 local WandTime = GetTime()
 local PetAttackTime = GetTime()
 local ItemUsage = GetTime()
+
+local function GetCurse()
+    local CurseSetting = Setting("Curse")
+    if CurseSetting ~= 1 then
+        if CurseSetting == 2 then
+            return "CurseOfAgony"
+        elseif CurseSetting == 3 then
+            return "CurseOfShadow"
+        elseif CurseSetting == 4 then
+            return "CurseOfTheElements"
+        elseif CurseSetting == 5 then
+            return "CurseOfRecklessness"
+        elseif CurseSetting == 6 then
+            return "CurseOfWeakness"
+        elseif CurseSetting == 7 then
+            return "CurseOfTongues"
+        elseif CurseSetting == 8 then
+            return "CurseOfIdiocy"
+        elseif CurseSetting == 9 then
+            return "CurseOfDoom"
+        end
+    elseif Target and Target.Player then
+        return "CurseOfAgony"
+    end
+    return nil
+end
 
 local function Locals()
     Player = DMW.Player
@@ -20,6 +46,7 @@ local function Locals()
     CDs = Player:CDs()
     Enemy20Y, Enemy20YC = Player:GetEnemies(20)
     Enemy30Y, Enemy30YC = Player:GetEnemies(30)
+    Curse = GetCurse()
 end
 
 local function Shards(Max)
@@ -42,7 +69,7 @@ end
 
 local function Wand()
     if not Player.Moving and not DMW.Helpers.Queue.Spell and not IsAutoRepeatSpell(Spell.Shoot.SpellName) and (DMW.Time - WandTime) > 0.7 and (Target.Distance > 1 or not Setting("Auto Attack In Melee")) and
-    (Player.PowerPct < 10 or Spell.ShadowBolt:CD() > 2 or ((not Setting("Curse of Agony") or not Spell.CurseOfAgony:Known() or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
+    (Player.PowerPct < 10 or Spell.ShadowBolt:CD() > 2 or ((not Curse or not Spell[Curse]:Known() or Debuff[Curse]:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
     (not Setting("Immolate") or not Spell.Immolate:Known() or Debuff.Immolate:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and 
     (not Setting("Corruption") or not Spell.Corruption:Known() or Debuff.Corruption:Exist(Target) or Target.TTD < 7 or Target.CreatureType == "Totem") and
     (not Setting("Siphon Life") or not Spell.SiphonLife:Known() or Debuff.SiphonLife:Exist(Target) or Target.TTD < 10 or Target.CreatureType == "Totem") and
@@ -191,13 +218,20 @@ function Warlock.Rotation()
                 return true
             end
         end
-        if not Player.Moving and Setting("Drain Soul Snipe") and (not Setting("Stop DS At Max Shards") or ShardCount < Setting("Max Shards")) then
+        if not Player.Moving and not Target.Player and Setting("Drain Soul Snipe") and (not Setting("Stop DS At Max Shards") or ShardCount < Setting("Max Shards")) and not Debuff.Shadowburn:Exist(Target) then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.2 then
+                if Unit.Facing and not Unit.Player and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.2 then
                     if (not Player.Casting or Player.Casting ~= Spell.DrainSoul.SpellName) and Spell.DrainSoul:Cast(Unit) then
                         WandTime = DMW.Time
                         return true
                     end
+                end
+            end
+        end
+        if Setting("Shadowburn") and ShardCount >= Setting("Max Shards") then
+            for _, Unit in ipairs(Enemy30Y) do
+                if Unit.Facing and (Unit.TTD < Setting("Shadowburn TTD") or Unit.HP < Setting("Shadowburn HP")) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.Shadowburn:Cast(Unit) then
+                    return true
                 end
             end
         end
@@ -208,7 +242,7 @@ function Warlock.Rotation()
                 (not Setting("Immolate") or not Spell.Immolate:Known() or Debuff.Immolate:Exist(Target) or Target.TTD < 10) and 
                 (not Setting("Corruption") or not Spell.Corruption:Known() or Debuff.Corruption:Exist(Target) or Target.TTD < 7) and
                 (not Setting("Siphon Life") or not Spell.SiphonLife:Known() or Debuff.SiphonLife:Exist(Target) or Target.TTD < 10) and 
-                (not Setting("Curse of Agony") or not Spell.CurseOfAgony:Known() or Debuff.CurseOfAgony:Exist(Target) or Target.TTD < 10 ) then                    
+                (not Curse or not Spell[Curse]:Known() or Debuff[Curse]:Exist(Target) or Target.TTD < 10 ) then                    
                     for i, Unit in ipairs(Enemy20Y) do
                         if i > 1 and Unit.TTD > 3 and Spell.Fear:Cast(Target) then
                             NewTarget = Unit
@@ -250,14 +284,18 @@ function Warlock.Rotation()
                     end
                 end
             end
-            --CoA
-            if Setting("Curse of Agony") then
-                if not Debuff.CurseOfAgony:Exist(Target) and Target.TTD > 10 and Target.CreatureType ~= "Totem" and Spell.CurseOfAgony:Cast(Target) then
+            --AC
+            if CDs and Curse and Target.TTD > 15 and Target.CreatureType ~= "Totem" and Target.Distance <= Spell[Curse].MaxRange and Spell.AmplifyCurse:Cast(Player) then
+                return true
+            end
+            --Curse
+            if Curse then
+                if not Debuff[Curse]:Exist(Target) and Target.TTD > 10 and Target.CreatureType ~= "Totem" and Spell[Curse]:Cast(Target) then
                     return true
                 end
-                if Setting("Cycle Curse of Agony") and Debuff.CurseOfAgony:Count() < Setting("Multidot Limit") then
+                if Setting("Cycle Curse") and Debuff[Curse]:Count() < Setting("Multidot Limit") then
                     for _, Unit in ipairs(Enemy30Y) do
-                        if not Debuff.CurseOfAgony:Exist(Unit) and Unit.TTD > 10 and Unit.CreatureType ~= "Totem" and Spell.CurseOfAgony:Cast(Unit) then
+                        if not Debuff[Curse]:Exist(Unit) and Unit.TTD > 10 and Unit.CreatureType ~= "Totem" and Spell[Curse]:Cast(Unit) then
                             return true
                         end
                     end
@@ -276,7 +314,7 @@ function Warlock.Rotation()
                     end
                 end
             end
-            if Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and not Spell.DarkPact:LastCast() and Spell.LifeTap:Cast(Player) then
+            if Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and (not Setting("Safe Life Tap") or (not Player:IsTanking() and not Debuff.LivingBomb:Exist(Player))) and Player.PowerPct <= Setting("Life Tap Mana") and not Spell.DarkPact:LastCast() and Spell.LifeTap:Cast(Player) then
                 return true
             end
             if Pet and not Pet.Dead and Setting("Dark Pact") and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and not Spell.DarkPact:LastCast() and not Spell.LifeTap:LastCast() and Spell.DarkPact:Cast(Pet) then
