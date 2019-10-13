@@ -4,15 +4,14 @@ local Warlock = DMW.Rotations.WARLOCK
 local UI = DMW.UI
 
 function Warlock.Settings()
-    -- UI.HUD.Options = {
-    --     [1] = {
-    --         Test = {
-    --             [1] = {Text = "HUD Test |cFF00FF00On", Tooltip = ""},
-    --             [2] = {Text = "HUD Test |cFFFFFF00Sort Of On", Tooltip = ""},
-    --             [3] = {Text = "HUD Test |cffff0000Disabled", Tooltip = ""}
-    --         }
-    --     }
-    -- }
+    UI.HUD.Options = {
+        [1] = {
+            Curse = {
+                [1] = {Text = "Curse |cFF00FF00Enabled", Tooltip = ""},
+                [2] = {Text = "Curse |cffff0000Disabled", Tooltip = ""}
+            }
+        }
+    }
     UI.AddHeader("General")
     UI.AddDropdown("Pet", nil, {"Disabled", "Imp", "Voidwalker", "Succubus", "Felhunter"}, 1, true)
     UI.AddToggle("Auto Buff", "Auto buff with Demon Skin/Armor", true)

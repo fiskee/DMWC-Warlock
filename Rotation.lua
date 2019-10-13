@@ -9,7 +9,7 @@ local ItemUsage = GetTime()
 
 local function GetCurse()
     local CurseSetting = Setting("Curse")
-    if CurseSetting ~= 1 then
+    if CurseSetting ~= 1 and HUD.Curse == 1 then
         if CurseSetting == 2 then
             return "CurseOfAgony"
         elseif CurseSetting == 3 then
@@ -221,20 +221,25 @@ function Warlock.Rotation()
                 return true
             end
         end
-        if not Player.Moving and not Target.Player and Setting("Drain Soul Snipe") and (not Setting("Stop DS At Max Shards") or ShardCount < Setting("Max Shards")) and Debuff.Shadowburn:Count() == 0 then
+        if not Player.Moving and not Target.Player and Setting("Drain Soul Snipe") and (not Setting("Stop DS At Max Shards") or ShardCount < Setting("Max Shards")) and (not Player.Casting or (Player.Casting ~= Spell.DrainSoul.SpellName and Player.Casting ~= Spell.Hellfire.SpellName and Player.Casting ~= Spell.RainOfFire.SpellName)) and Spell.DrainSoul:CD() < 0.2 and Debuff.Shadowburn:Count() == 0 then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and not Unit.Player and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.2 then
-                    if (not Player.Casting or (Player.Casting ~= Spell.DrainSoul.SpellName and Player.Casting ~= Spell.Hellfire.SpellName and Player.Casting ~= Spell.RainOfFire.SpellName)) and Spell.DrainSoul:Cast(Unit) then
+                if Unit.Facing and not Unit.Player and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) then
+                    if Spell.DrainSoul:Cast(Unit) then
                         WandTime = DMW.Time
                         return true
                     end
                 end
             end
         end
-        if Setting("Shadowburn") and ShardCount >= Setting("Max Shards") then
+        if Setting("Shadowburn") and ShardCount >= Setting("Max Shards") and (not Player.Casting or (Player.Casting ~= Spell.DrainSoul.SpellName and Player.Casting ~= Spell.Hellfire.SpellName and Player.Casting ~= Spell.RainOfFire.SpellName)) and Spell.Shadowburn:IsReady() then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and (Unit.TTD < Setting("Shadowburn TTD") or Unit.HP < Setting("Shadowburn HP")) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.Shadowburn:Cast(Unit) then
-                    return true
+                if Unit.Facing and (Unit.TTD < Setting("Shadowburn TTD") or Unit.HP < Setting("Shadowburn HP")) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) then
+                    if Player.Casting then
+                        SpellStopCasting()
+                    end
+                    if Spell.Shadowburn:Cast(Unit) then
+                        return true
+                    end
                 end
             end
         end
