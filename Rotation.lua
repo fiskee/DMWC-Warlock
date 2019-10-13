@@ -221,7 +221,7 @@ function Warlock.Rotation()
                 return true
             end
         end
-        if not Player.Moving and not Target.Player and Setting("Drain Soul Snipe") and (not Setting("Stop DS At Max Shards") or ShardCount < Setting("Max Shards")) and not Debuff.Shadowburn:Exist(Target) then
+        if not Player.Moving and not Target.Player and Setting("Drain Soul Snipe") and (not Setting("Stop DS At Max Shards") or ShardCount < Setting("Max Shards")) and Debuff.Shadowburn:Count() == 0 then
             for _, Unit in ipairs(Enemy30Y) do
                 if Unit.Facing and not Unit.Player and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) and Spell.DrainSoul:CD() < 0.2 then
                     if (not Player.Casting or (Player.Casting ~= Spell.DrainSoul.SpellName and Player.Casting ~= Spell.Hellfire.SpellName and Player.Casting ~= Spell.RainOfFire.SpellName)) and Spell.DrainSoul:Cast(Unit) then
