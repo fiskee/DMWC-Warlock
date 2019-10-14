@@ -328,7 +328,7 @@ function Warlock.Rotation()
             if Pet and not Pet.Dead and Setting("Dark Pact") and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and not Spell.DarkPact:LastCast() and not Spell.LifeTap:LastCast() and Spell.DarkPact:Cast(Pet) then
                 return true
             end
-            if Setting("Fear Solo Farming") and not Player.Moving and Target.TTD > 3 and #DMW.Friends.Units < 2 and (Setting("Shadow Bolt Mode") ~= 2 or Player.PowerPct < Setting("Shadow Bolt Mana") or Spell.ShadowBolt:LastCast()) and Debuff.Fear:Count() == 0 and (not Spell.Fear:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7)) and Spell.Fear:Cast(Target) then 
+            if Setting("Fear Solo Farming") and not Player.Moving and Target.TTD > 3 and #DMW.Friends.Units < 2 and (Setting("Shadow Bolt Mode") ~= 2 or Player.PowerPct < Setting("Shadow Bolt Mana") or Spell.ShadowBolt:LastCast() or (Spell.ShadowBolt:LastCast(2) and (Spell.LifeTap:LastCast() or Spell.DarkPact:LastCast()))) and Debuff.Fear:Count() == 0 and (not Spell.Fear:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7)) and Spell.Fear:Cast(Target) then 
                 return true
             end
             if Setting("Shadow Bolt Mode") == 2 and Target.Facing and not Player.Moving and Player.PowerPct > Setting("Shadow Bolt Mana") and (Target.TTD > Spell.ShadowBolt:CastTime() or (Target.Distance > 5 and not DMW.Player.Equipment[18])) and Spell.ShadowBolt:Cast(Target) then
