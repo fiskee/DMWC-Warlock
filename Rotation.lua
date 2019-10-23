@@ -247,10 +247,10 @@ function Warlock.Rotation()
                 ItemUsage = DMW.Time
                 return true
             end
-            if Setting("Life Tap OOC") and Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
+            if Setting("Life Tap OOC") and Player.HP >= Setting("Life Tap HP") and Player.PowerPct <= Setting("Life Tap Mana") and Spell.LifeTap:Cast(Player) then
                 return true
             end
-            if Pet and not Pet.Dead and Setting("Dark Pact OOC") and Setting("Dark Pact") and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and Spell.DarkPact:Cast(Player) then
+            if Pet and not Pet.Dead and Setting("Dark Pact OOC") and Player.PowerPct <= Setting("Dark Pact Mana") and Pet:PowerPct() > Setting("Dark Pact Pet Mana") and Spell.DarkPact:Cast(Player) then
                 return true
             end
         end
