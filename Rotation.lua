@@ -179,7 +179,7 @@ local function MultiDot()
             end
         end
     end
-    if Setting("Immolate") and Setting("Cycle Immolate") and Debuff.Immolate:Count() < Setting("Multidot Limit") then
+    if Setting("Immolate") and Setting("Cycle Immolate") and not Player.Moving and Debuff.Immolate:Count() < Setting("Multidot Limit") then
         for _, Unit in ipairs(Enemy30Y) do
             if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Unit.Pointer)) and Unit.CreatureType ~= "Totem" and Unit.Facing and not Debuff.Immolate:Exist(Unit) and Unit.TTD > 10 and Spell.Immolate:Cast(Unit) then
                 return true
