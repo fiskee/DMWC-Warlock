@@ -208,7 +208,7 @@ local function Dot()
     end
 end
 
-local function PVE()
+local function PvE()
     if Player.Casting and Player.Casting == Spell.Fear.SpellName and NewTarget then
         TargetUnit(NewTarget.Pointer)
         DMW.Player.Target = NewTarget
@@ -300,7 +300,7 @@ local function PVE()
     end
 end
 
-local function OOC()
+local function OoC()
     if not Player.Casting then
         if not Player.Combat and not Player.Moving and (not Pet or Pet.Dead) and Setting("Pet") ~= 1 then
             if Setting("Pet") == 2 and not Spell.SummonImp:LastCast() and Spell.SummonImp:Cast(Player) then
@@ -350,8 +350,8 @@ end
 
 function Warlock.Rotation()
     Locals()
-    OOC()
+    OoC()
     if Target and Target.ValidEnemy and Target.Distance < 40 then
-        PVE()
+        PvE()
     end
 end
