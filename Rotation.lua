@@ -174,7 +174,7 @@ local function MultiDot()
     end
     if Setting("Cycle Corruption") and Setting("Corruption") and (not Player.Moving or Talent.ImprovedCorruption.Rank == 5) and Debuff.Corruption:Count() < Setting("Multidot Limit") then
         for _, Unit in ipairs(Enemy30Y) do
-            if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Unit.Pointer)) and Unit.CreatureType ~= "Totem" and (Unit.Facing or (Talent.ImprovedCorruption.Rank == 5 and DMW.Settings.profile.Enemy.AutoFace)) and not Debuff.Corruption:Exist(Unit) and Unit.TTD > 7 and Spell.Corruption:Cast(Unit) then
+            if (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Unit.Pointer)) and Unit.CreatureType ~= "Totem" and (Unit.Facing or (Talent.ImprovedCorruption.Rank == 5 and DMW.Settings.profile.Enemy.AutoFace)) and not Debuff.Corruption:Exist(Unit) and Unit.TTD > 7 and ((Setting("Multi Dot Corruption Rank 1") and Spell.Corruption:Cast(Unit, 1)) or Spell.Corruption:Cast(Unit)) then
                 return true
             end
         end
