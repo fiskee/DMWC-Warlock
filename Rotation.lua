@@ -189,6 +189,12 @@ local function MultiDot()
 end
 
 local function Dot()
+    if (Player.Level - Target.Level) > 30 and not Target:IsBoss() and Target.CreatureType ~= "Totem" and Setting("Corruption") then
+        if (not Player.Moving or Talent.ImprovedCorruption.Rank == 5) and (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and (Target.Facing or (Talent.ImprovedCorruption.Rank == 5 and DMW.Settings.profile.Enemy.AutoFace)) and not Debuff.Corruption:Exist(Target) and Spell.Corruption:Cast(Target) then
+            return true
+        end
+        return true
+    end
     if Setting("Siphon Life") and not Debuff.SiphonLife:Exist(Target) and Target.TTD > 10 and Target.CreatureType ~= "Totem" and Spell.SiphonLife:Cast(Target) then
         return true
     end
@@ -231,7 +237,7 @@ local function PvE()
     end
     if not Player.Moving and not Target.Player and Setting("Drain Soul Snipe") and (not Setting("Stop DS At Max Shards") or ShardCount < Setting("Max Shards")) and (not Player.Casting or (Player.Casting ~= Spell.DrainSoul.SpellName and Player.Casting ~= Spell.Hellfire.SpellName and Player.Casting ~= Spell.RainOfFire.SpellName)) and Spell.DrainSoul:CD() < 0.2 and Debuff.Shadowburn:Count() == 0 then
         for _, Unit in ipairs(Enemy30Y) do
-            if Unit.Facing and not Unit.Player and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) then
+            if Unit.Facing and math.abs(Player.Level - Unit.Level) <= 10 and not Unit.Player and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) then
                 if Spell.DrainSoul:Cast(Unit) then
                     WandTime = DMW.Time
                     return true
@@ -274,8 +280,12 @@ local function PvE()
         if (not DMW.Player.Equipment[18] or (Target.Distance <= 1 and Setting("Auto Attack In Melee"))) and not IsCurrentSpell(Spell.Attack.SpellID) then
             StartAttack()
         end
-        Dot()
-        MultiDot()
+        if Dot() then
+            return true
+        end
+        if MultiDot() then
+            return true
+        end
         if Setting("Life Tap") and Player.HP >= Setting("Life Tap HP") and (not Setting("Safe Life Tap") or (not Player:IsTanking() and not Debuff.LivingBomb:Exist(Player))) and Player.PowerPct <= Setting("Life Tap Mana") and not Spell.DarkPact:LastCast() and Spell.LifeTap:Cast(Player) then
             return true
         end
