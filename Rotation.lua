@@ -85,6 +85,9 @@ local function Defensive()
         ItemUsage = DMW.Time
         return true
     end
+     if Setting("Sacrifice") and Player.HP < Setting ("Sacrifice HP") and Pet and not Pet.Dead  and (GetPetActionInfo(4) == GetSpellInfo(3716)) and Spell.Sacrifice:Cast(Player) then
+        return true
+    end
     if not Player.Casting and not Player.Moving and Setting("Drain Life") and Player.HP < Setting("Drain Life HP") and Target.CreatureType ~= "Mechanical" and Spell.DrainLife:Cast(Target) then
         return true
     end
