@@ -58,6 +58,8 @@ function Warlock.Settings()
     UI.AddRange("Drain Life HP", nil, 0, 100, 1, 25)
     UI.AddToggle("Health Funnel", "Activate Health Funnel, will only use if player HP above 60", false)
     UI.AddRange("Health Funnel HP", "Pet HP to cast Health Funnel", 0, 100, 1, 20)
+    UI.AddToggle("Sacrifice", "Activate Sacrifice", true)
+    UI.AddRange("Sacrifice HP", "Player HP to cast Sacrifice", 0, 100, 1, 20)
     UI.AddToggle("Luffa", "Auto use luffa trinket", true)
     UI.AddToggle("Shadow Ward", "Auto cast shadow ward when targeting priest or warlock players", true)
 
