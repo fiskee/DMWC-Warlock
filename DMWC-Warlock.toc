@@ -1,4 +1,4 @@
-## Interface: 11320
+## Interface: 11305
 ## Title: DoMeWhen Classic - Warlock
 ## Author: Fisker
 ## Notes: Warlock Rotation for DoMeWhen Classic
