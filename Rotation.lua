@@ -50,6 +50,7 @@ local function Locals()
 end
 
 local function Shards(Max)
+    Max = Max or 99
     local Count = 0
     for Bag = 0, 4, 1 do
         for Slot = 1, GetContainerNumSlots(Bag), 1 do
@@ -345,11 +346,13 @@ local function OoC()
             if Setting("Auto Buff") and DemonBuff() then
                 return true
             end
-            if not Player.Moving and Setting("Create Healthstone") and CreateHealthstone() then
-                return true
-            end
-            if not Player.Moving and Setting("Create Soulstone") and CreateSoulstone() then
-                return true
+            if Shards() > 0 then
+                if not Player.Moving and Setting("Create Healthstone") and CreateHealthstone() then
+                    return true
+                end
+                if not Player.Moving and Setting("Create Soulstone") and CreateSoulstone() then
+                    return true
+                end
             end
             if Setting("Soulstone Player") and not Player.Moving and Player.Instance == "none" and (DMW.Time - ItemUsage) > 0.2 and not Buff.SoulstoneResurrection:Exist(Player) and (Item.MajorSoulstone:Use(Player) or Item.GreaterSoulstone:Use(Player) or Item.Soulstone:Use(Player) or Item.LesserSoulstone:Use(Player) or Item.MinorSoulstone:Use(Player)) then
                 ItemUsage = DMW.Time
