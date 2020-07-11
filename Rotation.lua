@@ -242,7 +242,7 @@ local function PvE()
     end
     if not Player.Moving and not Target.Player and Setting("Drain Soul Snipe") and (not Setting("Stop DS At Max Shards") or ShardCount < Setting("Max Shards")) and (not Player.Casting or (Player.Casting ~= Spell.DrainSoul.SpellName and Player.Casting ~= Spell.Hellfire.SpellName and Player.Casting ~= Spell.RainOfFire.SpellName)) and Spell.DrainSoul:CD() < 0.2 and Debuff.Shadowburn:Count() == 0 then
         for _, Unit in ipairs(Enemy30Y) do
-            if Unit.Facing and math.abs(Player.Level - Unit.Level) <= 10 and not Unit.Player and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) then
+            if Unit.Facing and Unit.Level > DMW.Enums.GrayLvl[Player.Level] and not Unit.Player and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) then
                 if Spell.DrainSoul:Cast(Unit) then
                     WandTime = DMW.Time
                     return true
