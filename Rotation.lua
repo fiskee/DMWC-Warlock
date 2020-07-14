@@ -56,7 +56,7 @@ local function Shards(Max)
         for Slot = 1, GetContainerNumSlots(Bag), 1 do
             local ItemID = GetContainerItemID(Bag, Slot)
             if ItemID and ItemID == 6265 then
-                if Count >= Max then
+                if Count >= Max and Setting("Auto Delete Shards") then
                     PickupContainerItem(Bag, Slot)
                     DeleteCursorItem()
                 else
@@ -346,7 +346,7 @@ local function OoC()
             if Setting("Auto Buff") and DemonBuff() then
                 return true
             end
-            if Shards() > 0 then
+            if ShardCount > 0 then
                 if not Player.Moving and Setting("Create Healthstone") and CreateHealthstone() then
                     return true
                 end
